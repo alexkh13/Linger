@@ -2,11 +2,14 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
 
     var map = $scope.map = [];
 
-    lingerSocket.on("markers:created", function(loc) {
-        console.log(loc);
-        map.push({
-            location: loc
-        });
+    lingerSocket.on("markers:created", function(obj) {
+        map.push(obj);
+    });
+
+    lingerSocket.on("markers:initialize", function(data) {
+        angular.forEach(data, function(obj) {
+            map.push(obj);
+        })
     });
 
 }]);

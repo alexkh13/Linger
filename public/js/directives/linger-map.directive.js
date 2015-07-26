@@ -45,7 +45,7 @@ angular.module("linger.directives").directive("lingerMap", [ function() {
         templateUrl: "html/linger-map/linger-map.directive.html",
         link: function(scope, element, attrs) {
 
-            var stage = InitializeStage(element.children(1));
+            var stage = InitializeStage(element);
 
             scope.items = [];
 
@@ -132,8 +132,8 @@ angular.module("linger.directives").directive("lingerMap", [ function() {
 
             function geoToPixel(location) {
 
-                var MAP_WIDTH = $(window).width() * 100000;
-                var MAP_HEIGHT = $(window).height() * 100000;
+                var MAP_WIDTH = $(window).width() * 10000;
+                var MAP_HEIGHT = $(window).height() * 10000;
 
                 return {
                     x: Math.round((location.lng + 180) * (MAP_WIDTH / 360)),
@@ -148,10 +148,13 @@ angular.module("linger.directives").directive("lingerMap", [ function() {
                     lng: 34.82314109802246
                 });
 
-                var position = geoToPixel(item.location);
+                var position = geoToPixel({ lng: item.location[0], lat: item.location[1] });
 
                 position.x -= CURRENT.x;
                 position.y -= CURRENT.y;
+
+                position.x += ($(window).width() / 2);
+                position.y += ($(window).height() / 2);
 
                 item.sprite.position = position;
 

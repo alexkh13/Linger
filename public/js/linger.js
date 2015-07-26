@@ -11,8 +11,13 @@ angular.module("linger", [ "ngMap", "ui.router", "linger.services", "linger.cont
                 url: "/admin",
                 controller: "AdminController",
                 templateUrl: "html/admin.html"
+            })
+            .state("test", {
+                url: "/test",
+                controller: "TestController",
+                templateUrl: "html/test.html"
             });
     }]);
-angular.module("linger.services", [ "btford.socket-io" ]);
+angular.module("linger.services", [ "ngResource", "btford.socket-io" ]);
 angular.module("linger.controllers", []);
 angular.module("linger.directives", [ "hmTouchEvents" ]);
