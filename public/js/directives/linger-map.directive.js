@@ -1,169 +1,73 @@
-angular.module("linger.directives").directive("lingerMap", [ function() {
-
-    function InitializeStage(element) {
-
-        // You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
-        // which will try to choose the best renderer for the environment you are in.
-        var renderer = new PIXI.autoDetectRenderer(800, 600);
-
-        // The renderer will create a canvas element for you that you can then insert into the DOM.
-        $(element)
-            .append(renderer.view);
-
-        function resize() {
-
-            var w = $(window).width();
-            var h = $(window).height();
-
-            renderer.resize(w, h);
-        }
-
-        // You need to create a root container that will hold the scene you want to draw.
-        var stage = new PIXI.Container();
-
-        // kick off the animation loop (defined below)
-        animate();
-
-        function animate() {
-            // start the timer for the next animation loop
-            requestAnimationFrame(animate);
-
-            // this is the main render call that makes pixi draw your container and its children.
-            renderer.render(stage);
-        }
-
-        $(window).on("resize", resize);
-
-        resize();
-
-        return stage;
-    }
+angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map) {
 
     return {
-        scope: true,
+        scope: {
+            currentLocation: "="
+        },
         transclude: true,
         templateUrl: "html/linger-map/linger-map.directive.html",
         link: function(scope, element, attrs) {
 
-            var stage = InitializeStage(element);
+            var map = new Map(element);
 
-            scope.items = [];
+            function resize() {
 
-            function getScale(x, y) {
-                var center = getCenter();
-                var dx = center.x - x;
-                var dy = center.y - y;
-                var d = Math.sqrt(dx * dx + dy * dy);
-                var p = 100 - (d * 100 / Math.max(center.x, center.y));
-                return p / 100;
+                var w = $(window).width();
+                var h = $(window).height();
+
+                map.resize(w, h);
             }
 
-            function getCenter() {
-                return {
-                    x: $(window).width() / 2,
-                    y: $(window).height() / 2
-                }
-            }
+            $(window).on("resize", resize);
 
-            scope.panstart = function(ev) {
-                for(var i=0; i<scope.items.length; i++) {
-                    var bunny = scope.items[i];
-                    bunny.start = {
-                        x: bunny.sprite.position.x,
-                        y: bunny.sprite.position.y
-                    }
-                }
+            resize();
+
+            scope.panstart = function() {
+                map.panStop();
             };
 
-            function stopMove() {
-                clearInterval(timeout);
-                timeout = null;
-            }
+            scope.panend = function() {
 
-            var timeout;
-            function moveTo(delta) {
-                for(var i=0; i<scope.items.length; i++) {
-                    var bunny = scope.items[i];
-                    bunny.dest = {
-                        x: bunny.start.x + delta.x,
-                        y: bunny.start.y + delta.y
-                    }
-                }
-                if(!timeout) {
-                    timeout = setInterval(function() {
-                        for(var i=0; i<scope.items.length; i++) {
-                            var bunny = scope.items[i];
-                            bunny.sprite.position.x += (bunny.dest.x - bunny.sprite.position.x) / 6;
-                            bunny.sprite.position.y += (bunny.dest.y - bunny.sprite.position.y) / 6;
-                            bunny.sprite.scale.x = bunny.sprite.scale.y = getScale(bunny.sprite.position.x, bunny.sprite.position.y);
-                            if(!Math.floor(bunny.sprite.position.x - bunny.dest.x) && !Math.floor(bunny.sprite.position.y - bunny.dest.y)) {
-                                stopMove();
-                            }
-                        }
-                    }, 10);
-                }
-            }
+            };
 
             scope.pan = function(ev) {
-                if(!pinching) {
-                    moveTo({
-                        x: ev.deltaX,
-                        y: ev.deltaY
-                    });
-                }
+                map.panTo({
+                    x: ev.deltaX,
+                    y: ev.deltaY
+                });
             };
 
-            var pinching = false;
-            scope.pinchstart = function(ev) {
-                pinching = true;
-            };
-
-            scope.pinchend = function(ev) {
-                pinching = false;
-            };
-
-            scope.pinch = function(ev) {
-                stopMove();
-                for(var i=0; i<scope.items.length; i++) {
-                    var bunny = scope.items[i];
-                    bunny.sprite.scale.x = bunny.sprite.scale.y = bunny.sprite.scale.x + 0.1;
-                }
-            };
-
-            function geoToPixel(location) {
-
-                var MAP_WIDTH = $(window).width() * 10000;
-                var MAP_HEIGHT = $(window).height() * 10000;
-
-                return {
-                    x: Math.round((location.lng + 180) * (MAP_WIDTH / 360)),
-                    y: Math.round(((-1 * location.lat) + 90) * (MAP_HEIGHT / 180))
-                }
-            }
+            //var pinching = false;
+            //scope.pinchstart = function(ev) {
+            //    pinching = true;
+            //};
+            //
+            //scope.pinchend = function(ev) {
+            //    pinching = false;
+            //};
+            //
+            //scope.pinch = function(ev) {
+            //    stopMove();
+            //    for(var i=0; i<scope.items.length; i++) {
+            //        var bunny = scope.items[i];
+            //        bunny.sprite.scale.x = bunny.sprite.scale.y = bunny.sprite.scale.x + 0.1;
+            //    }
+            //};
 
             scope.$on("lingerMapItemCreate", function(context,  item) {
-
-                var CURRENT = geoToPixel({
-                    lat: 32.08457441812832,
-                    lng: 34.82314109802246
-                });
-
-                var position = geoToPixel({ lng: item.location[0], lat: item.location[1] });
-
-                position.x -= CURRENT.x;
-                position.y -= CURRENT.y;
-
-                position.x += ($(window).width() / 2);
-                position.y += ($(window).height() / 2);
-
-                item.sprite.position = position;
-
-                item.sprite.scale.x = item.sprite.scale.y = getScale(position.x, position.y);
-
-                scope.items.push(item);
-
-                stage.addChild(item.sprite);
+                map.add({ lng: item.location[0], lat: item.location[1] }, _.map(item.points, function(point) {
+                    return {
+                        lng: point.location[0],
+                        lat: point.location[1]
+                    }
+                }));
             });
+
+            scope.$watch("currentLocation", function(loc) {
+                if(loc) {
+                    map.setCurrentLocation(loc);
+                }
+            })
 
         }
     }

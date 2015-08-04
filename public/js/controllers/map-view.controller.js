@@ -1,4 +1,4 @@
-angular.module("linger.controllers").controller("MapViewController", [ "$scope", "lingerSocket", function ($scope, lingerSocket) {
+angular.module("linger.controllers").controller("MapViewController", [ "$scope", "$timeout", "lingerSocket", "lingerAPI", "geolocation", function ($scope, $timeout, lingerSocket, lingerAPI, geolocation) {
 
     var map = $scope.map = [];
 
@@ -11,6 +11,22 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
             map.push(obj);
         })
     });
+
+    map = lingerAPI.geo.query(function() {
+        $scope.map = map;
+    });
+
+    geolocation.getLocation().then(function(data) {
+        $scope.currentLocation = {
+            lat: data.coords.latitude,
+            lng: data.coords.longitude
+        }
+    });
+
+    //$scope.currentLocation = {
+    //    lat: 32.0473761,
+    //    lng: 34.7611808
+    //}
 
 }]);
 

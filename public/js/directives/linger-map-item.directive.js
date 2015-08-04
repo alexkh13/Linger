@@ -1,23 +1,14 @@
 angular.module("linger.directives").directive("lingerMapItem", [ function() {
     return {
         scope: {
-            location: "="
+            item: "="
         },
         link: function(scope, element, attrs) {
 
-            var bunnyTexture = PIXI.Texture.fromImage('/images/marker.png');
-
-            var bunny = new PIXI.Sprite(bunnyTexture);
-
-            bunny.scale.x = bunny.scale.y = 1 //getScale(bunny.position.x, bunny.position.y);
-
-            scope.$emit("lingerMapItemCreate", {
-                location: scope.location,
-                sprite: bunny
-            });
+            scope.$emit("lingerMapItemCreate", scope.item);
 
             scope.$on("$destroy", function() {
-                scope.$emit("lingerMapItemDestroy", bunny)
+                scope.$emit("lingerMapItemDestroy", scope.item)
             });
         }
     }

@@ -1,9 +1,9 @@
 angular.module("linger", [ "ngMap", "ui.router", "linger.services", "linger.controllers", "linger.directives" ])
     .config([ "$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise("/map");
+        $urlRouterProvider.otherwise("/admin");
         $stateProvider
             .state("map", {
-                url: "/map",
+                    url: "/map",
                 controller: "MapViewController",
                 templateUrl: "html/map-view.html"
             })
@@ -19,5 +19,5 @@ angular.module("linger", [ "ngMap", "ui.router", "linger.services", "linger.cont
             });
     }]);
 angular.module("linger.services", [ "ngResource", "btford.socket-io" ]);
-angular.module("linger.controllers", []);
+angular.module("linger.controllers", [ "geolocation" ]);
 angular.module("linger.directives", [ "hmTouchEvents" ]);

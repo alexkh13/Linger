@@ -21,7 +21,7 @@ module.exports = function(db) {
         return [ loc.longitude, loc.latitude ];
     }
 
-    var self = {
+    return {
         getClosestGroups: function(loc) {
             return findGroups({
                 location: {
@@ -120,7 +120,5 @@ module.exports = function(db) {
 
             return deferred.promise;
         }
-    };
-
-    return self;
+    }
 };
