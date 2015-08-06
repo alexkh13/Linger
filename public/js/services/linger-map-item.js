@@ -10,8 +10,9 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         var renderer = options.renderer;
         var anchor = options.anchor;
         var mask = options.mask;
+        var map = options.map;
 
-        var label = children.length || (location.lng + "," + location.lat);
+        var label = (children && children.length) || (location.lng + "," + location.lat);
         var container = new PIXI.Container();
         var sprite = new PIXI.Sprite(markerTexture);
         var graphics = new PIXI.Graphics();
@@ -21,8 +22,13 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         container.addChild(graphics);
         container.addChild(text);
 
-        sprite.tint = children.length ? 0xFFFFFF : 0x74d600;
-        sprite.position = undefined;
+        sprite.interactive = true;
+        sprite.tint = (children && children.length) ? 0xFFFFFF : 0x74d600;
+        sprite.position = angular.copy(options.position);
+
+        if(sprite.position) {
+            addToStage(options.before);
+        }
 
         this.position = angular.copy(sprite.position);
         this.location = location;
@@ -30,13 +36,14 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         this.graphics = graphics;
         this.text = text;
         this.container = container;
+        this.children = children;
 
         function getScale(x, y) {
             var center = getCenter();
-            var dx = center.x - (markerTexture.width / 2) - x;
-            var dy = center.y - (markerTexture.height / 2) - y;
+            var dx = center.x - (markerTexture.width / 2) - x - stage.position.x;
+            var dy = center.y - (markerTexture.height / 2) - y - stage.position.y;
             var d = Math.sqrt(dx * dx + dy * dy);
-            var p = 100 - (d * 80 / Math.max(center.x, center.y));
+            var p = 100 - (d * 70 / Math.max(center.x, center.y));
             return p / 100;
         }
 
@@ -50,30 +57,56 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         function getPosition(location) {
             if (anchor.x) {
                 return MapUtils.geoToPixel(location, {
-                    x: (renderer.width / 2) - (anchor.x),
-                    y: (renderer.height / 2) - (anchor.y)
+                    x: (renderer.width / 2) - (anchor.x) + stage.position.x,
+                    y: (renderer.height / 2) - (anchor.y) + stage.position.y
                 });
             }
         }
 
+        this.setPosition = function(position) {
+            sprite.position = position;
+            sprite.scale.x = sprite.scale.y = getScale(position.x, position.y);
+        };
+
+        this.getPosition = function() {
+            return {
+                x: sprite.position.x,
+                y: sprite.position.y
+            }
+        };
+
         var moveDestinationPosition;
 
+        function addToStage(before) {
+            sprite.scale.x = sprite.scale.y = getScale(sprite.position.x, sprite.position.y);
+            if (before) {
+                stage.addChildAt(container, stage.getChildIndex(before.container));
+            }
+            else {
+                stage.addChild(container);
+            }
+        }
+
         this.updatePosition = function() {
+
             if (!sprite.position) {
                 sprite.position = getPosition(location);
                 if (sprite.position) {
-                    sprite.scale.x = sprite.scale.y = getScale(sprite.position.x, sprite.position.y);
-                    stage.addChild(container, 0);
+                    this.position = angular.copy(sprite.position);
+                    addToStage();
                 }
             }
-            if (moveDestinationPosition) {
-                var moveX = (moveDestinationPosition.x - sprite.position.x) / 10;
-                var moveY = (moveDestinationPosition.y - sprite.position.y) / 10;
-                sprite.position.x += moveX;
-                sprite.position.y += moveY;
-                this.position.x += moveX;
-                this.position.y += moveY;
+            else {
+
                 sprite.scale.x = sprite.scale.y = getScale(sprite.position.x, sprite.position.y);
+
+                if (moveDestinationPosition) {
+                    sprite.position.x += (moveDestinationPosition.x - sprite.position.x) / 10;
+                    sprite.position.y += (moveDestinationPosition.y - sprite.position.y) / 10;
+                    if (!Math.floor(Math.abs(sprite.position.x - moveDestinationPosition.x)) && !(Math.floor(Math.abs(sprite.position.y - moveDestinationPosition.y)))) {
+                        moveDestinationPosition = null;
+                    }
+                }
             }
         };
 
@@ -121,7 +154,7 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
 
             text.scale = { x: scale, y: scale };
 
-            text.visible = mask.contains(this.position.x, this.position.y);
+            text.visible = mask.contains(sprite.position.x + stage.position.x, sprite.position.y + stage.position.y);
 
             if (text.visible) {
 
@@ -137,7 +170,7 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
             }
         };
 
-        var moveStartPosition;
+        var moveStartPosition, previousPos;
 
         this.move = function(delta) {
             if (!moveStartPosition) {
@@ -147,9 +180,48 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
                 };
             }
             moveDestinationPosition = {
-                x: moveStartPosition.x + delta.x,
-                y: moveStartPosition.y + delta.y
+                x: (moveStartPosition.x) + delta.x ,
+                y: (moveStartPosition.y) + delta.y
             }
+        };
+
+        this.moveTo = function(position) {
+            previousPos = moveStartPosition = angular.copy(moveDestinationPosition || sprite.position);
+            moveDestinationPosition = {
+                x: position.x,
+                y: position.y
+            };
+        };
+
+        this.revertPos = function() {
+            if (previousPos) {
+                this.moveTo(previousPos);
+                previousPos = null;
+            }
+        };
+
+        this.stop = function() {
+            moveStartPosition = null;
+        };
+
+        this.isHit = function(position) {
+            return sprite.containsPoint(position);
+        };
+
+        this.hide = function() {
+            container.visible = false;
+        };
+
+        this.getMoveDestination = function() {
+            return angular.copy(moveDestinationPosition);
+        };
+
+        this.show = function() {
+            container.visible = true;
+        };
+
+        this.remove = function() {
+            stage.removeChild(container);
         };
 
         this.updatePosition();

@@ -31,10 +31,14 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
             };
 
             scope.pan = function(ev) {
-                map.panTo({
+                map.pan({
                     x: ev.deltaX,
                     y: ev.deltaY
                 });
+            };
+
+            scope.tap = function(ev) {
+                map.tap(ev.center);
             };
 
             //var pinching = false;
@@ -55,12 +59,15 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
             //};
 
             scope.$on("lingerMapItemCreate", function(context,  item) {
-                map.add({ lng: item.location[0], lat: item.location[1] }, _.map(item.points, function(point) {
-                    return {
-                        lng: point.location[0],
-                        lat: point.location[1]
-                    }
-                }));
+                map.add({
+                    location: { lng: item.location[0], lat: item.location[1] },
+                    sub_points: _.map(item.points, function(point) {
+                        return {
+                            lng: point.location[0],
+                            lat: point.location[1]
+                        }
+                    })
+                });
             });
 
             scope.$watch("currentLocation", function(loc) {

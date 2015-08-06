@@ -88,40 +88,47 @@ angular.module("linger.controllers").controller("TestController", [ "$scope", fu
             context.stroke();
         }
 
-        function drawPoints(start, radius, d) {
-            var sd = 2*radius*Math.sin(d/radius/2);
-            var points = intersection(center.x, center.y, radius, start.x, start.y, sd);
-            if(points) {
-                circle(points[0], r, r_style);
-                circle(points[1], r, r_style);
-            }
-        }
-
-        function drawPointsCircle(center, radius) {
-            var c = Math.floor(Math.PI * radius / dd);
-            var d = Math.PI * radius / c;
-            var a = Math.floor(Math.random() * dd) + 1;
-
-            var start = intersection(center.x, center.y, radius, center.x + a, center.y, radius)[0];
-            var end = intersection(center.x, center.y, radius, center.x - a, center.y, radius)[0];
-
-            circle(center, radius, { strokeStyle: '#999' });
-            circle(start, r, r_style);
-            circle(end, r, r_style);
-
-            for(var i=1;i<c;i++) {
-                drawPoints(start, radius, d*i);
-            }
-        }
-
         var center = {
             x: canvas.width / 2,
             y: canvas.height / 2
         };
 
-        for(var i=1;i<=5;i++) {
-            drawPointsCircle(center, rr*i);
+        function getPoints(center, count) {
+
+            var i = 1, result = [];
+
+            while(result.length < count) {
+
+                var radius = rr*i++;
+                var c = Math.floor(Math.PI * radius / dd);
+                var d = Math.PI * radius / c;
+                var a = Math.floor(Math.random() * dd) + 1;
+
+                var start = intersection(center.x, center.y, radius, center.x + a, center.y, radius)[0];
+                var end = intersection(center.x, center.y, radius, center.x - a, center.y, radius)[0];
+
+
+                result.push(start, end);
+
+                for(var j=1;j<c;j++) {
+                    var sd = 2*radius*Math.sin(d*j/radius/2);
+                    var points = intersection(center.x, center.y, radius, start.x, start.y, sd);
+                    if(points) {
+                        result = result.concat(points);
+                    }
+                }
+            }
+
+            return result;
+
         }
+
+        var points = getPoints(center, 5);
+
+        angular.forEach(points, function(point) {
+            circle(point, r, r_style);
+        });
+
 
     }
 
