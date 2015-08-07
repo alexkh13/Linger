@@ -30,7 +30,7 @@ module.exports = function(db) {
                             type: 'Point',
                             coordinates: loc2arr(loc)
                         },
-                        $maxDistance: 200
+                        $maxDistance: 2000
                     }
                 }
             });

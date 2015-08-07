@@ -5,8 +5,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         var stage = new PIXI.Container();
         var items = [];
         var resizeRan = false;
-        var bgSprites = [];
         var currentExpended, expandTimeout;
+        var maxX, minX, maxY, minY;
 
         var ANCHOR = {
             x: undefined,
@@ -18,12 +18,30 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
 
         function animate() {
 
-            var i;
+            var i, j;
 
-            if (ANCHOR) {
-                for(i=0;i<items.length;i++) {
-                    items[i].animate();
-                    items[i].updatePosition();
+            for (i=0; i<items.length; i++) {
+                items[i].animate();
+                maxX = Math.max(maxX || 0, items[i].sprite.position.x);
+                maxY = Math.max(maxY || 0, items[i].sprite.position.y);
+                minX = Math.min(minX || Infinity, items[i].sprite.position.x);
+                minY = Math.min(minY || Infinity, items[i].sprite.position.y);
+                for (j=0; j<items.length; j++) {
+                    if (items[i] == items[j] || !items[j] || !items[i]) continue;
+                    try {
+                        var ii = stage.getChildIndex(items[i].container);
+                        var ij = stage.getChildIndex(items[j].container);
+                        var si = items[i].sprite.scale.x;
+                        var sj = items[j].sprite.scale.x;
+                        if ((si > sj && ii < ij) ||
+                            (si < sj && ii > ij)) {
+                            stage.swapChildren(items[i].container, items[j].container);
+                        }
+                    }
+                    catch(err) {
+                        // animate ran too fast
+                        // stage is not populated yet
+                    }
                 }
             }
 
@@ -35,6 +53,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 stage.position.x += delta.x;
                 stage.position.y += delta.y;
 
+                // automatically collapse when moving out
                 if (currentExpended) {
 
                     var pos = currentExpended.getPosition();
@@ -42,7 +61,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                     var center = { x: renderer.width / 2, y: renderer.height /2 };
                     var distance = MapUtils.distance(center, pos);
 
-                    if(distance > currentExpended.radius) {
+                    if(distance > currentExpended.radius + 100) {
                         collapseItem();
                     }
                 }
@@ -55,31 +74,55 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
             for(var i=0; i<items.length; i++) {
                 var item = items[i];
                 if(item.child) {
-                    item.moveTo(currentExpended.getPosition());
+                    item.hideTag();
+                    item.moveTo(currentExpended.getPosition(), function(item) {
+                        item.remove();
+                        items.splice(items.indexOf(item), 1);
+                    });
                 }
                 else {
                     item.revertPos();
                 }
             }
-            $timeout(function() {
-                for(var i=0; i<items.length; i++) {
-                    var item = items[i];
-                    if(item.child) {
-                        items[i].remove();
-                        items.splice(i--, 1);
-                    }
-                }
-            }, 1000);
             currentExpended = undefined;
         }
 
         this.setCurrentLocation = function(location) {
             angular.extend(ANCHOR, MapUtils.geoToPixel(location));
-
-            for(var i=0; i<items.length; i++) {
-                items[i].updatePosition();
-            }
         };
+
+        function buildWorld(width, height) {
+            function addBgSprite(x, y) {
+                var backgroundGraphics = new PIXI.Graphics();
+
+                for(var i=4;i<50;i+=2) {
+                    backgroundGraphics.lineStyle(i - 2, 0xffffff, 0.05);
+                    backgroundGraphics.drawCircle(x, y, Math.pow(i, 2));
+                }
+
+                var texture = new PIXI.RenderTexture(renderer, 1000, 1000);
+                texture.render(backgroundGraphics);
+
+                var sprite = new PIXI.Sprite(texture);
+                sprite.position.x = (width / 2) - x;
+                sprite.position.y = (height / 2) - y;
+
+                stage.addChild(sprite);
+            }
+
+            var bgTileSprite = new PIXI.extras.TilingSprite.fromImage("/images/bg.png", 4000, 4000);
+
+            bgTileSprite.position.x = (width / 2) - 2000;
+            bgTileSprite.position.y = (height / 2) - 2000;
+
+            stage.addChild(bgTileSprite);
+
+            for(var i=-1000; i <= 2000; i+=1000) {
+                for(var j=-1000; j <= 2000; j+=1000) {
+                    addBgSprite(i ,j);
+                }
+            }
+        }
 
         /**
          *
@@ -94,39 +137,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
             centerView.y = height / 2;
             if(!resizeRan) {
                 resizeRan = true;
-
-                function addBgSprite(x, y) {
-                    var backgroundGraphics = new PIXI.Graphics();
-
-                    for(var i=4;i<50;i+=2) {
-                        backgroundGraphics.lineStyle(i - 2, 0xffffff, 0.05);
-                        backgroundGraphics.drawCircle(x, y, Math.pow(i, 2));
-                    }
-
-                    var texture = new PIXI.RenderTexture(renderer, 1000, 1000);
-                    texture.render(backgroundGraphics);
-
-                    var sprite = new PIXI.Sprite(texture);
-                    sprite.position.x = (width / 2) - x;
-                    sprite.position.y = (height / 2) - y;
-
-                    bgSprites.push(sprite);
-                    stage.addChild(sprite);
-                }
-
-                var bgTileSprite = new PIXI.extras.TilingSprite.fromImage("/images/bg.png", 2000, 2000);
-
-                bgTileSprite.position.x = (width / 2) - 1000;
-                bgTileSprite.position.y = (height / 2) - 1000;
-
-                stage.addChild(bgTileSprite);
-                bgSprites.push(bgTileSprite);
-
-                addBgSprite(0 ,0);
-                addBgSprite(1000,1000);
-                addBgSprite(0,1000);
-                addBgSprite(1000,0);
-
+                buildWorld(width, height);
             }
         };
 
@@ -174,6 +185,21 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 x: stage.start.x + position.x,
                 y: stage.start.y + position.y
             };
+
+            var padding = 100;
+
+            if (stage.dest.x < -maxX)
+                stage.dest.x = -maxX - padding;
+
+            if (stage.dest.y < -maxY)
+                stage.dest.y = -maxY - padding;
+
+            if (stage.dest.x > -minX)
+                stage.dest.x = -minX + padding;
+
+            if (stage.dest.y > -minY)
+                stage.dest.y = -minY + padding;
+
 
         };
 
@@ -244,7 +270,11 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                         collapseItem();
                     }
                     expandItem.apply(this, [item]);
+                    return;
                 }
+            }
+            if (currentExpended) {
+                collapseItem();
             }
         };
     };

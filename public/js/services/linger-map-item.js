@@ -2,6 +2,12 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
 
     var markerTexture = PIXI.Texture.fromImage('/images/marker.png');
 
+    // todo: use loader to avoid texture loading delay
+    // width and height are set here to make sure there will be a value when creating map items
+    // although the marker texture itself isn't finished loading yet
+    markerTexture.width = 69;
+    markerTexture.height = 90;
+
     return function MapItem(options) {
 
         var children = options.children;
@@ -10,31 +16,27 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         var renderer = options.renderer;
         var anchor = options.anchor;
         var mask = options.mask;
-        var map = options.map;
 
-        var label = (children && children.length) || (location.lng + "," + location.lat);
+        var isCluster = children && !!children.length;
+
+        var label = isCluster ? children.length : (location.lng + "," + location.lat);
         var container = new PIXI.Container();
         var sprite = new PIXI.Sprite(markerTexture);
-        var graphics = new PIXI.Graphics();
-        var text = new PIXI.Text(label ,{font : '20px Roboto', fill : 0x000, align : 'center', wordWrap: true});
+        var tag = new PIXI.Container();
+        var text = new PIXI.Text(label ,{font : '20px Roboto', fill : isCluster ? 0xFFFFFF : 0x000, align : 'center', wordWrap: true});
 
         container.addChild(sprite);
-        container.addChild(graphics);
-        container.addChild(text);
+        container.addChild(tag);
 
-        sprite.interactive = true;
-        sprite.tint = (children && children.length) ? 0xFFFFFF : 0x74d600;
+        sprite.tint = isCluster ? 0xE3E3E3 : 0xB1FF36;
         sprite.position = angular.copy(options.position);
 
         if(sprite.position) {
             addToStage(options.before);
         }
 
-        this.position = angular.copy(sprite.position);
         this.location = location;
         this.sprite = sprite;
-        this.graphics = graphics;
-        this.text = text;
         this.container = container;
         this.children = children;
 
@@ -78,7 +80,9 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         var moveDestinationPosition;
 
         function addToStage(before) {
+            initializeTag();
             sprite.scale.x = sprite.scale.y = getScale(sprite.position.x, sprite.position.y);
+            tag.scale.x = tag.scale.y = 0;
             if (before) {
                 stage.addChildAt(container, stage.getChildIndex(before.container));
             }
@@ -92,19 +96,31 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
             if (!sprite.position) {
                 sprite.position = getPosition(location);
                 if (sprite.position) {
-                    this.position = angular.copy(sprite.position);
                     addToStage();
                 }
             }
             else {
 
-                sprite.scale.x = sprite.scale.y = getScale(sprite.position.x, sprite.position.y);
+                var scale = getScale(sprite.position.x, sprite.position.y);
+
+                sprite.scale.x = sprite.scale.y = scale;
+
+                tag.isVisible = mask.contains(sprite.position.x + stage.position.x, sprite.position.y + stage.position.y);
+
+                tag.position.x = sprite.position.x + (markerTexture.width*scale / 2);
+                tag.position.y = sprite.position.y;
+
+                tag.targetScale = tag.isVisible ? scale : 0;
 
                 if (moveDestinationPosition) {
                     sprite.position.x += (moveDestinationPosition.x - sprite.position.x) / 10;
                     sprite.position.y += (moveDestinationPosition.y - sprite.position.y) / 10;
                     if (!Math.floor(Math.abs(sprite.position.x - moveDestinationPosition.x)) && !(Math.floor(Math.abs(sprite.position.y - moveDestinationPosition.y)))) {
                         moveDestinationPosition = null;
+                        if (moveCallback) {
+                            moveCallback(this);
+                            moveCallback = null;
+                        }
                     }
                 }
             }
@@ -115,7 +131,7 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
          * @param x         Starting point (x) coordinate
          * @param y         Starting point (y) coordinate
          * @param width     The width of the bubble
-         * @param scale     Scale factor for the whole bubble
+         * @param height     Scale factor for the whole bubble
          * @returns         Polygon in a shape of a bubble
          *
          *       --------- w -----------
@@ -126,51 +142,58 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
          *                 \/
          *                (x,y)
          */
-        function getBubbleShape(x, y, width, scale) {
-            return new PIXI.Polygon([
-                x,                              y,
-                x - (scale*10),                 y - (scale*10),
-                x - (width/2) - (scale*10),     y - (scale*10),
-                x - (width/2) - (scale*10),     y - (scale*40) ,
-                x + (width/2) + (scale*10),     y - (scale*40),
-                x + (width/2) + (scale*10),     y - (scale*10),
-                x + (scale*10),                 y - (scale*10)
-            ]);
+        function drawBubble(graphics, x, y, width, height) {
+            graphics.moveTo(x,                      y);
+            graphics.lineTo(x - (10),               y - (10));
+            graphics.lineTo(x - (width/2),   y - (10));
+            graphics.quadraticCurveTo(x - (width/2) - 10, y - 10, x - (width/2) - 10, y - 20);
+            graphics.lineTo(x - (width/2) - (10),   y - (height));
+            graphics.quadraticCurveTo(x - (width/2) - 10, y - (10 + height) , x - (width/2), y - (10 + height));
+            graphics.lineTo(x + (width/2),   y - (10 + height));
+            graphics.quadraticCurveTo(x + (width/2) + 10, y - (10 + height) , x + (width/2) + (10),  y - (height));
+            graphics.lineTo(x + (width/2) + (10),   y - (20));
+            graphics.quadraticCurveTo(x + (width/2) + 10, y - 10, x + (width/2),  y - 10);
+            graphics.lineTo(x + (10),               y - (10));
+        }
 
+        function initializeTag() {
+
+            var graphics = new PIXI.Graphics();
+            var shadow = new PIXI.Graphics();
+
+            tag.addChild(shadow);
+            tag.addChild(graphics);
+            tag.addChild(text);
+
+            text.position.x = -(text.width/2);
+            text.position.y = -47;
+
+            var blurFilter = new PIXI.filters.BlurFilter();
+
+            blurFilter.blur = 10;
+
+            shadow.filters = [ blurFilter ];
+
+            shadow.lineStyle(0);
+            shadow.beginFill(0x000000, 0.2);
+            drawBubble(shadow, 0, -8, text.width+3, 33);
+            shadow.endFill();
+
+            graphics.lineStyle(0);
+            graphics.beginFill(isCluster ? 0xFF364D : 0xFFFFFF);
+            drawBubble(graphics, 0, -10, text.width, 30);
+            graphics.endFill();
         }
 
         this.animate = function() {
-
-            if(!this.position) return;
-
-            var scale = getScale(sprite.position.x, sprite.position.y);
-
-            graphics.clear();
-
-            var x = sprite.position.x;
-            var y = sprite.position.y;
-
-            var w = markerTexture.width * scale;
-
-            text.scale = { x: scale, y: scale };
-
-            text.visible = mask.contains(sprite.position.x + stage.position.x, sprite.position.y + stage.position.y);
-
-            if (text.visible) {
-
-                text.position.x = x + (w/2) - (text.width/2);
-                text.position.y = y - (scale*50) + (scale*3);
-
-                var bubble = getBubbleShape(x + (w/2), y  - (scale*10), text.width, scale);
-
-                graphics.lineStyle(0);
-                graphics.beginFill(0xFFFFFF);
-                graphics.drawShape(bubble);
-                graphics.endFill();
+            this.updatePosition();
+            if(angular.isDefined(tag.targetScale)) {
+                var currentScale = tag.scale.x;
+                tag.scale.x = tag.scale.y = currentScale + ( (tag.targetScale - currentScale) / 6 );
             }
         };
 
-        var moveStartPosition, previousPos;
+        var moveStartPosition, previousPos, moveCallback;
 
         this.move = function(delta) {
             if (!moveStartPosition) {
@@ -185,12 +208,13 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
             }
         };
 
-        this.moveTo = function(position) {
+        this.moveTo = function(position, callback) {
             previousPos = moveStartPosition = angular.copy(moveDestinationPosition || sprite.position);
             moveDestinationPosition = {
                 x: position.x,
                 y: position.y
             };
+            moveCallback = callback;
         };
 
         this.revertPos = function() {
@@ -222,6 +246,16 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
 
         this.remove = function() {
             stage.removeChild(container);
+        };
+
+        this.showTag = function() {
+        };
+
+        this.hideTag = function() {
+        };
+
+        this.collideWidth = function(item) {
+            return MapUtils.collide(container.getBounds(), item.container.getBounds());
         };
 
         this.updatePosition();

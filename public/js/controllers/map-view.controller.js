@@ -12,15 +12,15 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
         })
     });
 
-    map = lingerAPI.geo.query(function() {
-        $scope.map = map;
-    });
-
     geolocation.getLocation().then(function(data) {
         $scope.currentLocation = {
             lat: data.coords.latitude,
             lng: data.coords.longitude
-        }
+        };
+        map = lingerAPI.geo.query({ latitude: $scope.currentLocation.lat, longitude: $scope.currentLocation.lng }, function() {
+            $scope.map = map;
+        });
+
     });
 
     //$scope.currentLocation = {

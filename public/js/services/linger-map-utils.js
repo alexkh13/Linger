@@ -1,12 +1,32 @@
-angular.module("linger.services").factory("MapUtils", [ function() {
+angular.module("linger.services").factory("MapUtils", [ "$q", function($q) {
+
+    var geocoder = new google.maps.Geocoder();
 
     var utils = {
+        geocode: function(location) {
+            var deferred = $q.defer();
+            var latlng = new google.maps.LatLng(location.lat, location.lng);
+            geocoder.geocode({'location': latlng}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    deferred.resolve(results);
+                } else {
+                    deferred.reject(status);
+                }
+            });
+            return deferred.promise;
+        },
         geoToPixel: function (location, offset) {
             var zoom = 256 << 15;
             return {
                 x: Math.round(zoom + (location.lng * zoom / 180)) + ( offset ? offset.x : 0 ),
                 y: Math.round(zoom - zoom/Math.PI * Math.log((1 + Math.sin(location.lat * Math.PI / 180)) / (1 - Math.sin(location.lat * Math.PI / 180))) / 2) + ( offset ? offset.y : 0 )
             }
+        },
+        collide: function(a, b) {
+            return a.x < b.x + b.width &&
+                a.x + a.width > b.x &&
+                a.y < b.y + b.height &&
+                a.y + a.height > b.y;
         },
         intersection: function (x0, y0, r0, x1, y1, r1) {
             var a, dx, dy, d, h, rx, ry;
@@ -67,7 +87,7 @@ angular.module("linger.services").factory("MapUtils", [ function() {
         },
         getDistributedPoints: function (center, count) {
 
-            var rr = 80, dd = 100, i = 1, result = [];
+            var rr = 100, dd = 120, i = 1, result = [];
 
             while(result.length < count) {
 
