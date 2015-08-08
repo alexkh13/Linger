@@ -5,6 +5,19 @@ html, body {
 body {
     margin: 0;
     overflow: hidden;
+
+
+
+    background: rgb(0,153,204);
+    background: -moz-radial-gradient(center, ellipse cover,  rgba(0,153,204,1) 0%, rgba(0,77,124,1) 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(0,153,204,1)), color-stop(100%,rgba(0,77,124,1)));
+    background: -webkit-radial-gradient(center, ellipse cover,  rgba(0,153,204,1) 0%,rgba(0,77,124,1) 100%);
+    background: -o-radial-gradient(center, ellipse cover,  rgba(0,153,204,1) 0%,rgba(0,77,124,1) 100%);
+    background: -ms-radial-gradient(center, ellipse cover,  rgba(0,153,204,1) 0%,rgba(0,77,124,1) 100%);
+    background: radial-gradient(ellipse at center,  rgba(0,153,204,1) 0%,rgba(0,77,124,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0099cc', endColorstr='#004d7c',GradientType=1 );
+
+
 }
 
 #stage {
@@ -13,15 +26,6 @@ body {
     left: 0;
     bottom: 0;
     right: 0;
-
-    background: -moz-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%, rgba(0,0,0,0) 34%, rgba(0,0,0,0.21) 56%, rgba(0,0,0,0.7) 100%);
-    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(0,0,0,0)), color-stop(34%,rgba(0,0,0,0)), color-stop(56%,rgba(0,0,0,0.21)), color-stop(100%,rgba(0,0,0,0.7)));
-    background: -webkit-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,0.21) 56%,rgba(0,0,0,0.7) 100%);
-    background: -o-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,0.21) 56%,rgba(0,0,0,0.7) 100%);
-    background: -ms-radial-gradient(center, ellipse cover,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,0.21) 56%,rgba(0,0,0,0.7) 100%);
-    background: radial-gradient(ellipse at center,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,0.21) 56%,rgba(0,0,0,0.7) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#b3000000',GradientType=1 );
-
 
 
 }

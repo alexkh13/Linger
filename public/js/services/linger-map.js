@@ -3,6 +3,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
     return function Map(element) {
 
         var stage = new PIXI.Container();
+        var backgroundContainer = new PIXI.Container();
+        var pointsContainer = new PIXI.Container();
         var items = [];
         var resizeRan = false;
         var currentExpended, expandTimeout;
@@ -16,26 +18,31 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         var renderer = createRenderer(element, stage, animate);
         var centerView = new PIXI.Circle(0,0,0);
 
+        stage.addChild(backgroundContainer);
+        stage.addChild(pointsContainer);
+
         function animate() {
 
             var i, j;
 
             for (i=0; i<items.length; i++) {
                 items[i].animate();
-                maxX = Math.max(maxX || 0, items[i].sprite.position.x);
-                maxY = Math.max(maxY || 0, items[i].sprite.position.y);
-                minX = Math.min(minX || Infinity, items[i].sprite.position.x);
-                minY = Math.min(minY || Infinity, items[i].sprite.position.y);
+                if(!items[i]) continue;
+                var pos = items[i].getPosition();
+                maxX = Math.max(maxX || 0, pos.x);
+                maxY = Math.max(maxY || 0, pos.y);
+                minX = Math.min(minX || Infinity, pos.x);
+                minY = Math.min(minY || Infinity, pos.y);
                 for (j=0; j<items.length; j++) {
                     if (items[i] == items[j] || !items[j] || !items[i]) continue;
                     try {
-                        var ii = stage.getChildIndex(items[i].container);
-                        var ij = stage.getChildIndex(items[j].container);
-                        var si = items[i].sprite.scale.x;
-                        var sj = items[j].sprite.scale.x;
+                        var ii = pointsContainer.getChildIndex(items[i].container);
+                        var ij = pointsContainer.getChildIndex(items[j].container);
+                        var si = items[i].container.scale.x;
+                        var sj = items[j].container.scale.x;
                         if ((si > sj && ii < ij) ||
                             (si < sj && ii > ij)) {
-                            stage.swapChildren(items[i].container, items[j].container);
+                            pointsContainer.swapChildren(items[i].container, items[j].container);
                         }
                     }
                     catch(err) {
@@ -70,7 +77,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
 
         function collapseItem() {
             clearTimeout(expandTimeout);
-            currentExpended.show();
+            currentExpended.unpin();
             for(var i=0; i<items.length; i++) {
                 var item = items[i];
                 if(item.child) {
@@ -78,7 +85,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                     item.moveTo(currentExpended.getPosition(), function(item) {
                         item.remove();
                         items.splice(items.indexOf(item), 1);
-                    });
+                    }, 5, 0);
                 }
                 else {
                     item.revertPos();
@@ -96,7 +103,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 var backgroundGraphics = new PIXI.Graphics();
 
                 for(var i=4;i<50;i+=2) {
-                    backgroundGraphics.lineStyle(i - 2, 0xffffff, 0.05);
+                    backgroundGraphics.lineStyle(i - 2, 0xffffff, 0.02);
                     backgroundGraphics.drawCircle(x, y, Math.pow(i, 2));
                 }
 
@@ -107,15 +114,15 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 sprite.position.x = (width / 2) - x;
                 sprite.position.y = (height / 2) - y;
 
-                stage.addChild(sprite);
+                backgroundContainer.addChild(sprite);
             }
 
-            var bgTileSprite = new PIXI.extras.TilingSprite.fromImage("/images/bg.png", 4000, 4000);
+            //var bgTileSprite = new PIXI.extras.TilingSprite.fromImage("/images/bg.png", 2000, 2000);
+            //
+            //bgTileSprite.position.x = (width / 2) - 1000;
+            //bgTileSprite.position.y = (height / 2) - 1000;
 
-            bgTileSprite.position.x = (width / 2) - 2000;
-            bgTileSprite.position.y = (height / 2) - 2000;
-
-            stage.addChild(bgTileSprite);
+            //stage.addChild(bgTileSprite);
 
             for(var i=-1000; i <= 2000; i+=1000) {
                 for(var j=-1000; j <= 2000; j+=1000) {
@@ -151,6 +158,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 location: point.location,
                 children: point.sub_points,
                 stage: stage,
+                container: pointsContainer,
                 renderer: renderer,
                 anchor: ANCHOR,
                 mask: centerView,
@@ -186,20 +194,31 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 y: stage.start.y + position.y
             };
 
-            var padding = 100;
+            var padding = 200;
 
-            if (stage.dest.x < -maxX)
-                stage.dest.x = -maxX - padding;
+            // stage is moving the opposite way
+            var limit = [
+                -maxX - padding + renderer.width,
+                -maxY - padding + renderer.height,
+                -minX + padding,
+                -minY + padding
+            ];
 
-            if (stage.dest.y < -maxY)
-                stage.dest.y = -maxY - padding;
+            // right
+            if (stage.dest.x < limit[0])
+                stage.dest.x = limit[0] - ((limit[0] - stage.dest.x)/6);
 
-            if (stage.dest.x > -minX)
-                stage.dest.x = -minX + padding;
+            // bottom
+            if (stage.dest.y < limit[1])
+                stage.dest.y = limit[1] - ((limit[1] - stage.dest.y)/6);
 
-            if (stage.dest.y > -minY)
-                stage.dest.y = -minY + padding;
+            // left
+            if (stage.dest.x > limit[2])
+                stage.dest.x = limit[2] - ((limit[2] - stage.dest.x)/6);
 
+            // top
+            if (stage.dest.y > limit[3])
+                stage.dest.y = limit[3] - ((limit[3] - stage.dest.y)/6);
 
         };
 
@@ -212,6 +231,49 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
 
         this.panStop = function() {
             panStarted = null;
+
+            var padding = 200;
+
+            // stage is moving the opposite way
+            var limit = [
+                -maxX - padding + renderer.width,
+                -maxY - padding + renderer.height,
+                -minX + padding,
+                -minY + padding
+            ];
+
+            var fix = {
+                x: undefined,
+                y: undefined
+            };
+
+            if (stage.position.x < limit[0])
+                fix.x = limit[0];
+
+            if (stage.position.y < limit[1])
+                fix.y = limit[1];
+
+            if (stage.position.x >  limit[2])
+                fix.x = limit[2];
+
+            if (stage.position.y > limit[3])
+                fix.y = limit[3];
+
+            if(fix.x && !fix.y) {
+                fix.y = stage.position.y;
+                this.panTo(fix);
+                return;
+            }
+
+            if(fix.y && !fix.x) {
+                fix.x = stage.position.x;
+                this.panTo(fix);
+                return;
+            }
+
+            if(fix.y && fix.x) {
+                this.panTo(fix);
+            }
         };
 
         function pushAll(pushDistance, center, except) {
@@ -241,7 +303,9 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
             // push everything aside
             pushAll(maxRadius, item.getMoveDestination() || item.getPosition(), item);
             // hide cluster
-            item.hide();
+            item.pin();
+            // bring to front
+            pointsContainer.setChildIndex(item.container, items.length-1);
             // add all children
             angular.forEach(item.children, function(location, index) {
                 var added = self.add({
@@ -250,7 +314,10 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                     before: item
                 });
                 added.child = true;
-                added.moveTo(dPoints[index]);
+                added.hideTag();
+                added.moveTo(dPoints[index], function() {
+                    added.showTag();
+                });
             });
             expandTimeout = $timeout(function() {
                 currentExpended = item;
@@ -263,18 +330,18 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         }
 
         this.tap = function(position) {
+
+            if (currentExpended) {
+                collapseItem();
+                return;
+            }
+
             for(var i=0;i<items.length; i++) {
                 var item = items[i];
-                if (item.isHit(position)) {
-                    if (currentExpended) {
-                        collapseItem();
-                    }
+                if (item.isHit(position) && item.isVisible()) {
                     expandItem.apply(this, [item]);
                     return;
                 }
-            }
-            if (currentExpended) {
-                collapseItem();
             }
         };
     };
@@ -282,7 +349,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
     function createRenderer(element, stage, additionalAnimation) {
         // You can use either `new PIXI.WebGLRenderer`, `new PIXI.CanvasRenderer`, or `PIXI.autoDetectRenderer`
         // which will try to choose the best renderer for the environment you are in.
-        var renderer = new PIXI.autoDetectRenderer(800, 600);
+        var renderer = new PIXI.CanvasRenderer(800, 600, {transparent: true});
 
         // The renderer will create a canvas element for you that you can then insert into the DOM.
         $(element)

@@ -23,11 +23,11 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
             resize();
 
             scope.panstart = function() {
-                map.panStop();
+                //map.panStop();
             };
 
             scope.panend = function() {
-
+                map.panStop();
             };
 
             scope.pan = function(ev) {

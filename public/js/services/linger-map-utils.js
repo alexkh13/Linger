@@ -87,7 +87,7 @@ angular.module("linger.services").factory("MapUtils", [ "$q", function($q) {
         },
         getDistributedPoints: function (center, count) {
 
-            var rr = 100, dd = 120, i = 1, result = [];
+            var rr = 80, dd = 100, i = 1, result = [];
 
             while(result.length < count) {
 
