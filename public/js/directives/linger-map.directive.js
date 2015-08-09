@@ -5,6 +5,7 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
             currentLocation: "="
         },
         transclude: true,
+        replace: true,
         templateUrl: "html/linger-map/linger-map.directive.html",
         link: function(scope, element, attrs) {
 
@@ -12,8 +13,8 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
 
             function resize() {
 
-                var w = $(window).width();
-                var h = $(window).height();
+                var w = $(element).width();
+                var h = $(element).height();
 
                 map.resize(w, h);
             }
@@ -38,7 +39,10 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
             };
 
             scope.tap = function(ev) {
-                map.tap(ev.center);
+                map.tap({
+                    x: ev.pointers[0].globalX,
+                    y: ev.pointers[0].globalY
+                });
             };
 
             //var pinching = false;

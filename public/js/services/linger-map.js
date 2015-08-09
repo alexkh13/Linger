@@ -103,7 +103,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 var backgroundGraphics = new PIXI.Graphics();
 
                 for(var i=4;i<50;i+=2) {
-                    backgroundGraphics.lineStyle(i - 2, 0xffffff, 0.02);
+                    backgroundGraphics.lineStyle(i - 2, 0xffffff, 0.05);
                     backgroundGraphics.drawCircle(x, y, Math.pow(i, 2));
                 }
 
@@ -354,7 +354,6 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         // The renderer will create a canvas element for you that you can then insert into the DOM.
         $(element)
             .append(renderer.view);
-
 
         function animate() {
             // start the timer for the next animation loop

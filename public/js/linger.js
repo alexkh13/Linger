@@ -17,6 +17,12 @@ angular.module("linger", [ "ngMap", "ui.router", "linger.services", "linger.cont
                 controller: "TestController",
                 templateUrl: "html/test.html"
             });
+    }])
+    .controller("Main", ["$scope", function($scope) {
+        $scope.currentTab = "explore";
+        $scope.selectTab = function(tab) {
+            $scope.currentTab = tab;
+        }
     }]);
 angular.module("linger.services", [ "ngResource", "btford.socket-io" ]);
 angular.module("linger.controllers", [ "geolocation" ]);

@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title></title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel='stylesheet' type='text/css' href='css/inkdrops.css'>
+    <link rel='stylesheet' type='text/css' href='css/entypo/entypo.css'>
     <link rel="stylesheet" href="css/main.css">
+
     <script language="javascript" src="js/libs/jquery-1.11.3.min.js"></script>
+    <script language="javascript" src="js/libs/ink.js"></script>
     <script language="javascript" src="js/libs/underscore-min.js"></script>
     <script language="javascript" src="js/libs/pixi.min.js"></script>
     <script language="javascript" src="js/libs/hammer.min.js"></script>
@@ -37,6 +45,29 @@
     <script language="javascript" src="js/services/linger-api.js"></script>
 </head>
 <body>
-    <div ui-view style="height: 100%"></div>
+<div class="main" ng-controller="Main">
+    <div class="container-fluid top-bar">
+        <div class="row header">
+            <div class="col-xs-6 col-md-6 title">Linger</div>
+            <div class="col-xs-6 col-md-6 options">
+                <i class="etp etp-magnifying-glass"></i>
+                <i class="etp etp-dots-three-vertical"></i>
+            </div>
+        </div>
+        <div class="row navigation">
+            <div class="col-xs-4 col-md-4 nav-item inkMe" ink-color='bgWhite' ng-click="selectTab('chats')" ng-class="{'highlighted':currentTab=='chats'}">Chats</div>
+            <div class="col-xs-4 col-md-4 nav-item inkMe" ink-color='bgWhite' ng-click="selectTab('explore')" ng-class="{'highlighted':currentTab=='explore'}">Explore</div>
+            <div class="col-xs-4 col-md-4 nav-item inkMe" ink-color='bgWhite' ng-click="selectTab('friends')" ng-class="{'highlighted':currentTab=='friends'}">Friends</div>
+        </div>
+        <div class="row nav-highlight">
+            <div class="col-xs-4 col-md-4 nav-highlight-item" ng-class="{
+                'chats':currentTab=='chats',
+                'explore':currentTab=='explore',
+                'friends':currentTab=='friends'
+            }"></div>
+        </div>
+    </div>
+    <div ui-view style="height: 100%;position:relative;"></div>
+</div>
 </body>
 </html>
