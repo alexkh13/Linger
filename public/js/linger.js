@@ -1,28 +1,40 @@
-angular.module("linger", [ "ngMap", "ui.router", "linger.services", "linger.controllers", "linger.directives" ])
-    .config([ "$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise("/admin");
-        $stateProvider
-            .state("map", {
-                    url: "/map",
-                controller: "MapViewController",
-                templateUrl: "html/map-view.html"
-            })
-            .state("admin", {
-                url: "/admin",
-                controller: "AdminController",
-                templateUrl: "html/admin.html"
-            })
-            .state("test", {
-                url: "/test",
-                controller: "TestController",
-                templateUrl: "html/test.html"
-            });
+angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
+    .run([ "$rootScope", function($rootScope) {
+        $rootScope.goBack = function() {
+            window.history.back();
+        };
     }])
-    .controller("Main", ["$scope", function($scope) {
-        $scope.currentTab = "explore";
+    .config([ "$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
+        $urlRouterProvider.otherwise("/");
+        $stateProvider
+            .state("main", {
+                url: "/",
+                templateUrl: "html/main.html",
+                controller: "Main"
+            })
+            .state("main.chat", {
+                url: "chat",
+                templateUrl: "html/chat.html",
+                controller: "ChatController"
+            })
+    }])
+    .controller("Main", ["$scope", "$timeout", "$http", "$state", function($scope, $timeout, $http, $state) {
+
+        var tabs = {
+            "chats": 0,
+            "explore": 1,
+            "friends": 2
+        };
+
         $scope.selectTab = function(tab) {
             $scope.currentTab = tab;
-        }
+            $scope.$broadcast("slide", tabs[tab]);
+        };
+
+        $scope.$on("showDropDown", function() {
+            $scope.showDropDownPopup =  true;
+        });
+
     }]);
 angular.module("linger.services", [ "ngResource", "btford.socket-io" ]);
 angular.module("linger.controllers", [ "geolocation" ]);

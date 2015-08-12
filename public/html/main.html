@@ -1,0 +1,26 @@
+<div class="container-fluid top-bar">
+    <div class="row header">
+        <div class="col-xs-6 col-md-6 title">Linger</div>
+        <div class="col-xs-6 col-md-6 options">
+            <i class="etp etp-magnifying-glass"></i>
+            <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
+        </div>
+    </div>
+    <div class="row navigation">
+        <div class="col-xs-4 col-md-4 nav-item inkMe" ink-color='bgWhite' ng-click="selectTab('chats')" ng-class="{'highlighted':currentTab=='chats'}">Chats</div>
+        <div class="col-xs-4 col-md-4 nav-item inkMe" ink-color='bgWhite' ng-click="selectTab('explore')" ng-class="{'highlighted':currentTab=='explore'}">Explore</div>
+        <div class="col-xs-4 col-md-4 nav-item inkMe" ink-color='bgWhite' ng-click="selectTab('friends')" ng-class="{'highlighted':currentTab=='friends'}">Friends</div>
+    </div>
+    <div class="row nav-highlight">
+        <div class="col-xs-4 col-md-4 nav-highlight-item" highlight-slider></div>
+    </div>
+</div>
+<div class="tab-views" tab-slider>
+    <div class="tab-view chats" id="chats" ng-controller="ChatsViewController" ng-include="'html/chats-view.html'"></div>
+    <div class="tab-view explore" id="explore" ng-controller="MapViewController" ng-include="'html/map-view.html'"></div>
+    <div class="tab-view friends" id="friends" ng-controller="FriendsViewController" ng-include="'html/friends-view.html'"></div>
+</div>
+<div ui-view class="page-view"></div>
+<div class="dropdown-menu-popup-backdrop" ng-show="showDropDownPopup" ng-click="showDropDownPopup=false">
+    <div class="dropdown-menu-popup" ng-show="showDropDownPopup"></div>
+</div>

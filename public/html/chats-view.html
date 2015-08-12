@@ -1,0 +1,7 @@
+<div class="view-content">
+    <div ng-repeat="chat in chats" class="chat-row" ng-click="go()">
+        <div class="chat-profile" style="background-image:url(images/profile/{{$index+1}}.jpg);"></div>
+        <div class="chat-content">
+            {{ chat.name }}</div>
+    </div>
+</div>

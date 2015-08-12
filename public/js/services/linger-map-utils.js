@@ -1,20 +1,6 @@
 angular.module("linger.services").factory("MapUtils", [ "$q", function($q) {
 
-    var geocoder = new google.maps.Geocoder();
-
     var utils = {
-        geocode: function(location) {
-            var deferred = $q.defer();
-            var latlng = new google.maps.LatLng(location.lat, location.lng);
-            geocoder.geocode({'location': latlng}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    deferred.resolve(results);
-                } else {
-                    deferred.reject(status);
-                }
-            });
-            return deferred.promise;
-        },
         geoToPixel: function (location, offset) {
             var zoom = 256 << 15;
             return {

@@ -1,4 +1,5 @@
-$(function() {$('.inkMe').click(function(evt){
+$(function() {
+	$('.inkMe').click(function(evt){
 	var elem = $(this);
 	var multiple = false;
 	(this.getAttribute("multiple-ink")== 'true')?multiple = true:true;
