@@ -155,6 +155,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         this.add = function(point) {
 
             var item = new MapItem({
+                name: point.name,
                 location: point.location,
                 children: point.sub_points,
                 stage: stage,
@@ -307,9 +308,10 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
             // bring to front
             pointsContainer.setChildIndex(item.container, items.length-1);
             // add all children
-            angular.forEach(item.children, function(location, index) {
+            angular.forEach(item.children, function(item, index) {
                 var added = self.add({
-                    location: location,
+                    name: item.name,
+                    location: item.location,
                     position: currentPosition,
                     before: item
                 });

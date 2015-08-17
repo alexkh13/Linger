@@ -2,8 +2,41 @@
     <linger-map current-location="currentLocation" style="height:100%">
         <linger-map-item ng-repeat="item in map" item="item"></linger-map-item>
     </linger-map>
+    <div class="container-fluid map-view-bottom-bar" ng-click="showListView=!showListView">
+        <div class="row">
+            <div class="col-xs-6 col-md-6">
+                <span><i class="etp etp-list"></i> List View</span>
+            </div>
+            <div class="col-xs-6 col-md-6"></div>
+        </div>
+    </div>
+    <div class="list-view" ng-show="showListView">
+        <div class="list-view-content">
+            <div ng-repeat="item in map">
+                <div class="cluster" ng-if="item.type=='cluster'">
+                    <div class="cluster-title">{{item.name || item.location}} <span class="distance-tag">{{item.distance}}</span></div>
+                    <div class="cluster-points">
+                        <div ng-repeat="item in item.points" class="point">
+                            {{item.name || item.location}}
+                        </div>
+                    </div>
+                </div>
+                <div class="point" ng-if="item.type=='point'">
+                    {{item.name || item.location}}
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid list-view-bottom-bar" ng-click="showListView=!showListView">
+            <div class="row">
+                <div class="col-xs-6 col-md-6">
+                    <span><i class="etp etp-location"></i> Map View</span>
+                </div>
+                <div class="col-xs-6 col-md-6"></div>
+            </div>
+        </div>
+    </div>
     <div class="buttons-wrapper">
-        <div class="add-button">
+        <div class="add-button" ng-click="goCreate()">
             <i class="etp etp-plus"></i>
         </div>
     </div>

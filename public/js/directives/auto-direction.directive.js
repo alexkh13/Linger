@@ -1,6 +1,5 @@
-angular.module("linger.directives").directive("autoDirection", [ "$timeout", function($timeout) {
+angular.module("linger.directives").directive("autoDirection", [ function() {
     return {
-        scope: true,
         templateUrl: "html/chat-scroll.directive.html",
         link: function(scope, element, attrs) {
             function isUnicode(str) {

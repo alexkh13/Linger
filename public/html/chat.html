@@ -5,7 +5,7 @@
                 <span class="back-button" ng-click="goBack()">
                     <i class="etp etp-chevron-thin-left"></i>
                 </span>
-                <span class="title">Test</span>
+                <span class="title">{{title}}</span>
             </div>
             <div class="col-xs-6 col-md-6 options">
                 <span>
@@ -14,14 +14,6 @@
             </div>
         </div>
     </div>
-    <div class="view-content chat-panel">
-        <div class="conversation-panel" chat-scroll></div>
-        <div class="input-panel">
-            <span class="chat-input-wrapper">
-                <input type="text" class="chat-input" placeholder="Write message here" auto-direction>
-                <i class="etp etp-attachment attachment"></i>
-            </span>
-            <button class="submit-button"><i class="etp etp-location-pin"></i></button>
-        </div>
-    </div>
+    <div class="view-content chat-panel" ng-include="'html/chat-threads.html'" ng-controller="ChatThreadsController"></div>
+    <div ui-view class="page-view"></div>
 </div>

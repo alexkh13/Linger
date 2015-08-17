@@ -40,8 +40,8 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
 
             scope.tap = function(ev) {
                 map.tap({
-                    x: ev.pointers[0].globalX,
-                    y: ev.pointers[0].globalY
+                    x: ev.center.x,
+                    y: ev.center.y - $(ev.target).offset().top
                 });
             };
 
@@ -64,11 +64,15 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
 
             scope.$on("lingerMapItemCreate", function(context,  item) {
                 map.add({
+                    name: item.name,
                     location: { lng: item.location[0], lat: item.location[1] },
                     sub_points: _.map(item.points, function(point) {
                         return {
-                            lng: point.location[0],
-                            lat: point.location[1]
+                            name: point.name,
+                            location: {
+                                lng: point.location[0],
+                                lat: point.location[1]
+                            }
                         }
                     })
                 });

@@ -1,7 +1,7 @@
 <div class="view-content">
     <div ng-repeat="friend in friends" class="chat-row">
-        <div class="chat-profile" style="background-image:url(images/profile/{{$index+1}}.jpg);"></div>
+        <div class="chat-profile" style="background-image:url({{friend.picture.thumbnail}});"></div>
         <div class="chat-content">
-            {{ friend.name }}</div>
+            {{ friend.name.first.capitalize() + " " +  friend.name.last.capitalize() }}</div>
     </div>
 </div>

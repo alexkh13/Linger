@@ -1,21 +1,53 @@
 angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
-    .run([ "$rootScope", function($rootScope) {
+    .run([ "$rootScope", "$window", function($rootScope, $window) {
         $rootScope.goBack = function() {
-            window.history.back();
+            $window.history.back();
         };
     }])
-    .config([ "$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
+    .config([ "$stateProvider", "$urlRouterProvider", "$locationProvider", function($stateProvider, $urlRouterProvider, $locationProvider) {
+        $locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise("/");
         $stateProvider
+            .state("login", {
+                url: "/login",
+                templateUrl: "html/login.html",
+                controller: "LoginController"
+            })
             .state("main", {
                 url: "/",
                 templateUrl: "html/main.html",
-                controller: "Main"
+                controller: "Main",
+                resolve: {
+                    login: [ "$q", "$timeout", "lingerAPI", "$state", function($q, $timeout, lingerAPI, $state) {
+                        var deferred = $q.defer();
+                        lingerAPI.auth.getUser(function(user) {
+                            if(user._id) {
+                                deferred.resolve(user);
+                            }
+                            else {
+                                $state.go("login", {
+                                    location: "replace"
+                                });
+                            }
+                        });
+                        return deferred.promise;
+                    }]
+                }
             })
             .state("main.chat", {
-                url: "chat",
+                url: "chat/:id",
                 templateUrl: "html/chat.html",
                 controller: "ChatController"
+            })
+            .state("main.chat.conversation", {
+                url: "/:thread",
+                templateUrl: "html/chat-conversation.html",
+                controller: "ChatConversationController"
+            })
+            .state("main.create", {
+                url: "create",
+                templateUrl: "html/create.html",
+                controller: "CreateController"
             })
     }])
     .controller("Main", ["$scope", "$timeout", "$http", "$state", function($scope, $timeout, $http, $state) {

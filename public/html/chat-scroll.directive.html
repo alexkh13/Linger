@@ -1,69 +1,18 @@
 <table width="100%" height="100%">
     <tr>
         <td width="100%" height="100%" valign="bottom">
-            <div class="event-wrapper left">
+            <div class="event-wrapper" ng-repeat="message in messages" ng-class="{
+                'right': message.me,
+                'left': !message.me
+            }">
                 <div class="event-avatar-wrapper">
-                    <div class="event-avatar" style="background-image:url(images/profile/1.jpg)"></div>
+                    <div class="event-avatar" style="background-image:url(images/profile/{{message.image}}.jpg)"></div>
                 </div>
                 <div class="event-content-wrapper">
-                    <div class="event-owner">Name here</div>
+                    <div class="event-owner">{{message.owner}}</div>
                     <div class="event-content">
-                        <div class="event-text">content will go here</div>
-                        <div class="event-time">18:28</div>
-                    </div>
-                </div>
-            </div>
-            <div class="event-wrapper right">
-                <div class="event-avatar-wrapper">
-                    <div class="event-avatar" style="background-image:url(images/profile/4.jpg)"></div>
-                </div>
-                <div class="event-content-wrapper">
-                    <div class="event-owner">Name here</div>
-                    <div class="event-content">
-                        <div class="event-text">content will go here</div>
-                        <div class="event-time">18:31</div>
-                    </div>
-                </div>
-            </div>
-            <div class="event-wrapper left">
-                <div class="event-avatar-wrapper">
-                    <div class="event-avatar" style="background-image:url(images/profile/6.jpg)"></div>
-                </div>
-                <div class="event-content-wrapper">
-                    <div class="event-owner">Name here</div>
-                    <div class="event-content">
-                        <div class="event-text">content will go here. content will go here. content will go here.
-                            content will go here. content will go here. content will go here. </div>
-                    </div>
-                    <div class="event-content">
-                        <div class="event-text">more content here </div>
-                        <div class="event-time">18:43</div>
-                    </div>
-                </div>
-            </div>
-            <div class="event-wrapper right">
-                <div class="event-avatar-wrapper">
-                    <div class="event-avatar" style="background-image:url(images/profile/4.jpg)"></div>
-                </div>
-                <div class="event-content-wrapper">
-                    <div class="event-owner">Name here</div>
-                    <div class="event-content">
-                        <div class="event-text"> content will go here content will go here
-                            content will go here content will go here</div>
-                        <div class="event-time">18:31</div>
-                    </div>
-                </div>
-            </div>
-            <div class="event-wrapper left">
-                <div class="event-avatar-wrapper">
-                    <div class="event-avatar" style="background-image:url(images/profile/1.jpg)"></div>
-                </div>
-                <div class="event-content-wrapper">
-                    <div class="event-owner">Name here</div>
-                    <div class="event-content">
-                        <div class="event-text">content will go here content will go here content will go here content will go here
-                            content will go here content will go here</div>
-                        <div class="event-time">18:28</div>
+                        <div class="event-text">{{message.content}}</div>
+                        <div class="event-time">{{message.time}}</div>
                     </div>
                 </div>
             </div>

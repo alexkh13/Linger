@@ -9,8 +9,11 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
     markerTexture.width = 69;
     markerTexture.height = 90;
 
+    var cnt = 0;
+
     return function MapItem(options) {
 
+        var name = options.name;
         var children = options.children;
         var location = options.location;
         var stage = options.stage;
@@ -22,11 +25,24 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
 
         var isCluster = children && !!children.length;
 
-        var label = isCluster ? children.length : (location.lng + "," + location.lat);
+        var label = name || (isCluster ? children.length : (location.lng + "," + location.lat));
         var container = new PIXI.Container();
         var sprite = new PIXI.Sprite(isCluster ? clusterTexture : markerTexture);
         var tag = new PIXI.Container();
-        var text = new PIXI.Text(label ,{font : '20px Roboto', fill : isCluster ? 0xFFFFFF : 0x000, align : 'center', wordWrap: true});
+        var text = new PIXI.Text(label ,{font : '18px Arial', fill : isCluster ? 0xFFFFFF : 0x000, align : 'center'});
+
+        if (!isCluster) {
+            var img = new PIXI.Sprite.fromImage("images/groups/" + (name || (cnt++%13+1)) + ".jpg");
+            var imgMask = new PIXI.Graphics();
+            imgMask.beginFill(0x000);
+            imgMask.drawCircle(35,30,25);
+            imgMask.endFill();
+            img.width = 50;
+            img.height = 50;
+            img.mask = imgMask;
+            container.addChild(imgMask);
+            container.addChild(img);
+        }
 
         container.addChild(sprite);
         container.addChild(tag);

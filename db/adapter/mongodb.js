@@ -119,6 +119,35 @@ module.exports = function(db) {
             });
 
             return deferred.promise;
+        },
+        getUserById: function(id) {
+            var deferred = q.defer();
+            db.collection("users").findOne({ _id: new ObjectID(id) }, function(err, user) {
+                if(err) {
+                    deferred.reject(err);
+                }
+                else {
+                    deferred.resolve(user);
+                }
+            });
+            return deferred.promise;
+        },
+        updateUser: function(id, profile, accessToken) {
+            var deferred = q.defer();
+            db.collection("users").findAndModify(
+                { id: profile.id },
+                null,
+                { $set: { accessToken: accessToken }, $setOnInsert: profile },
+                { new: true, upsert: true },
+                function(err, inserted) {
+                    if (err) {
+                        deferred.reject(err);
+                    }
+                    else {
+                        deferred.resolve(inserted.value)
+                    }
+                });
+            return deferred.promise;
         }
     }
 };

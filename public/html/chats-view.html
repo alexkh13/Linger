@@ -1,7 +1,14 @@
 <div class="view-content">
-    <div ng-repeat="chat in chats" class="chat-row" ng-click="go()">
-        <div class="chat-profile" style="background-image:url(images/profile/{{$index+1}}.jpg);"></div>
+    <div ng-repeat="chat in chats" class="chat-row" ng-click="go(chat.name)" ng-class="{
+        'suggestion': chat.suggestion
+    }">
+        <div class="chat-profile" style="background-image:url('images/{{ chat.group   && 'groups' || 'profile'}}/{{chat.group && chat.name || chat.image}}.jpg');"></div>
         <div class="chat-content">
-            {{ chat.name }}</div>
+            <span ng-if="chat.suggestion" class="suggest">?</span> <span class="title">{{ chat.name }}</span>
+            <span class="count-people">{{chat.count}}</span>
+            <span class="count-friends">{{chat.friends}}</span>
+            <span class="count-messages" ng-if="chat.messages">{{chat.messages}}</span>
+            <div class="last-message">{{chat.lastMessage}}</div>
+        </div>
     </div>
 </div>

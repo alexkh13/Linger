@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="linger">
 <head lang="en">
+    <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title></title>
@@ -14,6 +15,7 @@
 
     <script language="javascript" src="js/libs/jquery-1.11.3.min.js"></script>
     <script language="javascript" src="js/libs/ink.js"></script>
+    <script language="javascript" src="js/libs/geolib.js"></script>
     <script language="javascript" src="js/libs/underscore-min.js"></script>
     <script language="javascript" src="js/libs/pixi.min.js"></script>
     <script language="javascript" src="js/libs/hammer.min.js"></script>
@@ -39,6 +41,10 @@
     <script language="javascript" src="js/controllers/admin.controller.js"></script>
     <script language="javascript" src="js/controllers/test.controller.js"></script>
     <script language="javascript" src="js/controllers/chat.controller.js"></script>
+    <script language="javascript" src="js/controllers/chat-conversation.controller.js"></script>
+    <script language="javascript" src="js/controllers/chat-threads.controller.js"></script>
+    <script language="javascript" src="js/controllers/create.controller.js"></script>
+    <script language="javascript" src="js/controllers/login.controller.js"></script>
 
     <script language="javascript" src="js/directives/chat-scroll.directive.js"></script>
     <script language="javascript" src="js/directives/tab-slider.directive.js"></script>
@@ -55,7 +61,7 @@
 </head>
 <body>
 <div class="main">
-    <div ui-view style="height:100%;padding-top:7em;position:relative;"></div>
+    <div ui-view style="height:100%;"></div>
 </div>
 </body>
 </html>
