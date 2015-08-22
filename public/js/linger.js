@@ -1,5 +1,23 @@
 angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
+    .service('userService', function() {
+        this.userData = {roomnum: 0};
+
+        this.user = function() {
+            return this.userData;
+        };
+
+        this.setRoomNum = function(roomNumber) {
+            this.userData.roomnum = roomNumber;
+        };
+
+        this.GetRoomNum = function() {
+            return this.userData.roomnum;
+        };
+    })
     .run([ "$rootScope", function($rootScope) {
+        //It is executed after all of the services have been configured and the injector has been created
+
+
         $rootScope.goBack = function() {
             window.history.back();
         };
@@ -12,11 +30,15 @@ angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "l
                 templateUrl: "html/main.html",
                 controller: "Main"
             })
-            .state("main.chat", {
+            /*.state("main.chat", {
                 url: "chat",
                 templateUrl: "html/chat.html",
                 controller: "ChatController"
-            })
+            })*/.state("chat", {
+                url: "/chat",
+                controller: "chatController",
+                templateUrl: "html/chat.html"
+            });
     }])
     .controller("Main", ["$scope", "$timeout", "$http", "$state", function($scope, $timeout, $http, $state) {
 

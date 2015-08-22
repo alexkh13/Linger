@@ -17,6 +17,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 function initializeDB(db) {
     db.collection('groups').createIndex({"location": "2dsphere"}, function(err) {
         if(err) {
@@ -24,6 +26,7 @@ function initializeDB(db) {
         }
     });
 }
+require('./chat')(io);
 
 MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
     if (err) throw err;

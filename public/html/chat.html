@@ -1,3 +1,12 @@
+<!--<script>-->
+    <!--// listener, whenever the server emits 'updatechat', this updates the chat body-->
+    <!--socket.on('updatechat', function (username, data) {-->
+        <!--$('#conversation').append('<b>'+username + ':</b> ' + data + '<br>');-->
+    <!--});-->
+<!--</script>-->
+<head>
+    <script> var socket = io()</script>
+</head>
 <div class="page">
     <div class="container-fluid top-bar">
         <div class="row header">
@@ -15,13 +24,15 @@
         </div>
     </div>
     <div class="view-content chat-panel">
-        <div class="conversation-panel" chat-scroll></div>
+        <div class="conversation-panel" id="conversation" chat-scroll></div>
         <div class="input-panel">
+            <input type="text" class="chat-input" id="roomnum" placeholder="Enter Room Number" auto-direction>
             <span class="chat-input-wrapper">
-                <input type="text" class="chat-input" placeholder="Write message here" auto-direction>
+
+                <input type="text" class="chat-input" id="data" placeholder="Write message here" auto-direction>
                 <i class="etp etp-attachment attachment"></i>
             </span>
-            <button class="submit-button"><i class="etp etp-location-pin"></i></button>
+            <button class="submit-button" id="datasend"><i class="etp etp-location-pin"></i></button>
         </div>
     </div>
 </div>

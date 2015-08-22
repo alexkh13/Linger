@@ -16,6 +16,18 @@ module.exports = function(db) {
         });
         return deferred.promise;
     }
+    function findChatGroups(f) {
+        var deferred = q.defer();
+        db.collection("chatgroups").find(f).toArray(function(err, docs) {
+            if(err) {
+                deferred.reject(err);
+            }
+            else {
+                deferred.resolve(docs);
+            }
+        });
+        return deferred.promise;
+    }
 
     function loc2arr(loc) {
         return [ loc.longitude, loc.latitude ];
@@ -37,6 +49,10 @@ module.exports = function(db) {
         },
         getGroups: function() {
             return findGroups();
+        },
+        getChatGroups: function()
+        {
+            return findChatGroups();
         },
         insertCluster: function(loc, points) {
             var deferred = q.defer();
@@ -75,6 +91,7 @@ module.exports = function(db) {
             db.collection("groups").findOne({ _id: clusterId}, function(err, cluster) {
                 var data =  {
                     points: cluster.points.concat([{
+
                         _id: new ObjectID(),
                         location: loc2arr(loc)
                     }])
@@ -119,6 +136,20 @@ module.exports = function(db) {
             });
 
             return deferred.promise;
+        },
+        insertChatGroup:function(loc,name,pic)
+        {
+            var deferred = q.defer();
+            var group = {type: "point", location: loc2arr(loc)};
+            db.collection("chatgroups").insert(group, function(err, inserted) {
+                if (err) {
+                    deferred.reject(err);
+                }
+                else {
+                    deferred.resolve(inserted.ops[0]);
+                }
+            });
         }
+
     }
 };
