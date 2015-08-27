@@ -2,6 +2,6 @@ angular.module("linger.services").factory("chatAPI", [ "$resource", function($re
     var items = [];
 
     return {
-        chat: $resource("/chatAPI/chat")
+        chat: $resource("/chatAPI/:userid")
     }
 }]);

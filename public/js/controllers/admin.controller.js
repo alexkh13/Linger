@@ -26,6 +26,7 @@ angular.module("linger.controllers").controller("AdminController", [ "$scope", "
                     });
                     $scope.result = data;
                 });
+
         }
     };
 

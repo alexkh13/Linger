@@ -1,8 +1,34 @@
 /**
  * Created by Brutus on 22/08/2015.
  */
-var chatAPI = require('express').Router();
+var chatapi = require('express').Router();
+var geolib = require('./geolib');
+var _ = require('underscore');
 
-api.use("/chat", require("./chat"));
+function handleError(err) {
+    console.log(err);
+    res.status(500);
+    res.end();
+}
 
-module.exports = chatAPI;
+chatapi.get("/", function(req, res) {
+    req.db.getChatGroups().then(function (docs) {
+        res.send(docs);
+    }, handleError);
+});
+
+chatapi.get("/:userid", function(req, res) {
+    var user = {userid: parseFloat(req.params.userid)};
+
+
+    req.db.getClosestChatGroups(user).then(function(docs) {
+        res.send(docs);
+    }, handleError);
+});
+
+chatapi.post("/", function(req, res) {
+
+
+});
+
+module.exports = chatapi;

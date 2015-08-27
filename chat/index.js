@@ -1,6 +1,7 @@
 var chat = require('express').Router();
 var chathandler = require('./chathandler');
 var _ = require('underscore');
+var lingerDB = require('./db');
 
 function handleError(err) {
     console.log(err);
@@ -15,13 +16,14 @@ chat.get("/", function(req, res) {
 });
 
 
-/*var userscache = {};
-var roomscache = {};*/
+/*var usersSocketCache = {};*/
 
 module.exports = function(io){
 
     io.on('connection', function (socket) {
+
         console.log("user connected");
+
         // when the client emits 'sendchat', this listens and executes
         socket.on('sendchat', function (msgdata) {
 
@@ -31,44 +33,46 @@ module.exports = function(io){
             io.sockets.in(socket.room).emit('updatechat', socket.username, msgdata);
         });
 
-        // when the client emits 'adduser', this listens and executes
-        socket.on('switchroom', function (roomnum){//username) {
+        socket.on('useradd', function(UserInfo)
+        {
+            // Check if the user requesting to add has permissions to add
+
+            // Check if the user added to the group isnt already a member
+
+            // add the user to the group + send updatechat to that users socket. ! we need to save the sockets to our users the minute they get connected!
+            // add the client's username to the global list
+            //usernames[username] = username;
+        });
+
+        socket.on('switchroom', function (roomnum){
             var username = socket.id;
 
             // store the username in the socket session for this client
             socket.username = username;
 
-            // add the user to the cache
-            if (userscache.find(username))
-            {
+            // Check authenticity of the Client here! and that he belongs to the group
 
-            }
-
-            // send client to room 1
+            // adding the client to the wanted room
+            socket.leave(socket.room);
             socket.join(roomnum);
 
             // store the room name in the socket session for this client
             socket.room = roomnum;
-
-            // add the client's username to the global list
-            //usernames[username] = username;
-
-
-            // echo to client they've connected
-            //socket.emit('updatechat', 'you have connected to room1');
-
-            // echo to room 1 that a person has connected to their room
-            socket.broadcast.to('room1').emit('updatechat', /*username added username that was added */username + ' was added');
         });
 
         // when the client emits 'sendchat', this listens and executes
         socket.on('sendchat', function (data) {
             // we tell the client to execute 'updatechat' with 2 parameters
             io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+
+            // add the message to the messages collection
         });
 
         socket.on('disconnect', function(){
+
             console.log('user disconnected');
+
+            // Dispose of users saved socket
         });
     });
 

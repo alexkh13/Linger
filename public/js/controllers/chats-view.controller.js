@@ -1,6 +1,7 @@
-angular.module("linger.controllers").controller("ChatsViewController", [ "$scope", "$state","userService","chatAPI","lingerAPI","chatAPI", function ($scope, $state, userService,lingerAPI, chatAPI) {
+angular.module("linger.controllers").controller("ChatsViewController", [ "$scope", "$state","userService","chatAPI","lingerAPI", function ($scope, $state, userService,lingerAPI, chatAPI) {
 
-    chatAPI.chat
+    var uid =  userService.GetUserId();
+ $scope.chats = chatAPI.chat.query({userid: uid}, function(){});
 
     $scope.chats = [
         { name: "test1" , id:"1"},

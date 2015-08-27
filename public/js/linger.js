@@ -1,6 +1,6 @@
 angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
     .service('userService', function() {
-        this.userData = {roomnum: 0};
+        this.userData = {roomnum: 0, userid:0};
 
         this.user = function() {
             return this.userData;
@@ -12,6 +12,15 @@ angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "l
 
         this.GetRoomNum = function() {
             return this.userData.roomnum;
+        };
+
+        // Temporary until Facebook is implemented
+        this.setUserID = function(newuserid) {
+            this.userData.userid = newuserid;
+        };
+
+        this.GetUserId = function(){
+          return this.userData.userid;
         };
     })
     .run([ "$rootScope", function($rootScope) {
