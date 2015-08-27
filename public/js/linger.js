@@ -39,11 +39,6 @@ angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "l
                 templateUrl: "html/chat.html",
                 controller: "ChatController"
             })
-            .state("main.chat.conversation", {
-                url: "/:thread",
-                templateUrl: "html/chat-conversation.html",
-                controller: "ChatConversationController"
-            })
             .state("main.create", {
                 url: "create",
                 templateUrl: "html/create.html",
