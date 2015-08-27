@@ -38,7 +38,7 @@ module.exports = function(db) {
         getGroups: function() {
             return findGroups();
         },
-        insertCluster: function(loc, points) {
+        insertCluster: function(loc) {
             var deferred = q.defer();
 
             var group = {
@@ -90,12 +90,9 @@ module.exports = function(db) {
             });
             return deferred.promise;
         },
-        updateCluster: function(clusterId, loc) {
+        updateGroup: function(groupId, data) {
             var deferred = q.defer();
-            var data = {
-                location: loc2arr(loc)
-            };
-            db.collection("groups").update({ _id: clusterId }, { $set: data }, function(err) {
+            db.collection("groups").update({ _id: groupId }, { $set: data }, function(err) {
                 if (err) {
                     deferred.reject(err);
                 }
@@ -105,10 +102,10 @@ module.exports = function(db) {
             });
             return deferred.promise;
         },
-        insertGroup: function(loc) {
+        insertGroup: function(name, loc, clusterId) {
             var deferred = q.defer();
 
-            var group = { type: "point", location: loc2arr(loc) };
+            var group = { name: name, type: "point", location: loc2arr(loc), cluster: clusterId };
             db.collection("groups").insert(group, function(err, inserted) {
                 if(err) {
                     deferred.reject(err);

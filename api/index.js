@@ -67,7 +67,7 @@ api.use(function(req, res, next) {
     }
 });
 
-api.use("/geo", require("./geo"));
+api.use("/chat", require("./chat"));
 api.use("/user", require("./user"));
 
 module.exports = api;

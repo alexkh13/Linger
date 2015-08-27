@@ -411,7 +411,7 @@
 
 
     /**
-        * Calculates the center of a collection of geo coordinates
+        * Calculates the center of a collection of chat coordinates
         *
         * @param        array       Collection of coords [{latitude: 51.510, longitude: 7.1321}, {latitude: 49.1238, longitude: "8° 30' W"}, ...]
         * @return       object      {latitude: centerLat, longitude: centerLng}
