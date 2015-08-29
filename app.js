@@ -25,11 +25,11 @@ app.use(session({
     key: 'sid'
 }));
 
-app.use('/js', express.static(__dirname + '/public/js'));
-app.use('/css', express.static(__dirname + '/public/css'));
-app.use('/html', express.static(__dirname + '/public/html'));
-app.use('/fonts', express.static(__dirname + '/public/fonts'));
-app.use('/images', express.static(__dirname + '/public/images'));
+app.use('/js', express.static(__dirname + '/www/js'));
+app.use('/css', express.static(__dirname + '/www/css'));
+app.use('/html', express.static(__dirname + '/www/html'));
+app.use('/fonts', express.static(__dirname + '/www/fonts'));
+app.use('/images', express.static(__dirname + '/www/images'));
 
 function initializeDB(db) {
     db.collection('groups').createIndex({"location": "2dsphere"}, function(err) {
@@ -55,7 +55,7 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
 
     app.all('/*', function(req, res, next) {
         // Just send the index.html for other files to support HTML5Mode
-        res.sendFile('public/index.html', { root: __dirname });
+        res.sendFile('www/index.html', { root: __dirname });
     });
 
     server.listen(3000);

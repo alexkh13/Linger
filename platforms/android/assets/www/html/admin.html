@@ -1,0 +1,13 @@
+<map center="current-location" style="height:100%;width:100%" on-click="click()" zoom="16">
+    <marker position="{{marker.location[1]}}, {{marker.location[0]}}" ng-repeat="marker in children" on-click="click()"
+            icon="http://mt.google.com/vt/icon/name=icons/spotlight/spotlight-ad.png"></marker>
+    <marker position="{{marker.location[1]}}, {{marker.location[0]}}" ng-repeat="marker in markers" on-click="click()"
+            icon="{{ marker.type == 'cluster' && 'http://mt.google.com/vt/icon?psize=30&font=fonts/arialuni_t.ttf&color=ff304C13&name=icons/spotlight/spotlight-waypoint-a.png&ax=43&ay=48&text=%E2%80%A2' || ''}}"></marker>
+    <marker position="{{marker.location[1]}}, {{marker.location[0]}}" ng-repeat="marker in result" on-click="click()"
+            icon="http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png"></marker>
+
+</map>
+<div style="position:fixed;bottom:20px;right:20px;background-color:#fff">
+    <input type="radio" ng-model="mode" value="add"> add<br>
+    <input type="radio" ng-model="mode" value="query"> query
+</div>
