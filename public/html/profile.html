@@ -1,0 +1,30 @@
+<div class="page profile">
+    <div class="container-fluid top-bar">
+        <div class="row header">
+            <div class="col-xs-10 col-md-10 title">
+                <span class="back-button" ng-click="goBack()">
+                    <i class="etp etp-chevron-thin-left"></i>
+                </span>
+                <span class="title">Profile</span>
+            </div>
+            <div class="col-xs-2 col-md-2 options">
+                <span>
+                    <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="profile-content">
+        <div class="pic" style="background-image:url({{profile.picture.large}})">
+            <div class="name">{{ profile.name.first.capitalize() + " " +  profile.name.last.capitalize() }}</div>
+        </div>
+        <div>
+            <div ng-repeat="group in groups" class="chat-row" ng-click="go(group)">
+                <div class="chat-profile" style="background-image:url('images/groups/{{group.name}}.jpg');"></div>
+                <div class="chat-content">
+                    <span class="title">{{ group.name }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

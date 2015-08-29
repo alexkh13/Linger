@@ -1,9 +1,9 @@
-<div class="main-page">
-    <div class="container-fluid top-bar">
+<div class="main-page" ng-class="{'collapsed':showSearch}">
+    <div class="container-fluid top-bar" ng-class="{'collapsed':showSearch}">
         <div class="row header">
             <div class="col-xs-6 col-md-6 title">Linger</div>
             <div class="col-xs-6 col-md-6 options">
-                <i class="etp etp-magnifying-glass"></i>
+                <i class="etp etp-magnifying-glass" ng-click="showSearch=true"></i>
                 <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
             </div>
         </div>
@@ -23,6 +23,16 @@
     </div>
     <div ui-view class="page-view"></div>
     <div class="dropdown-menu-popup-backdrop" ng-show="showDropDownPopup" ng-click="showDropDownPopup=false">
-        <div class="dropdown-menu-popup" ng-show="showDropDownPopup"></div>
+        <div class="dropdown-menu-popup" ng-show="showDropDownPopup">
+            <div class="settings-line"><i class="etp etp-plus"></i> New Group</div>
+            <div class="settings-line"><i class="etp etp-camera"></i> Scan QR Code</div>
+            <div class="settings-line"><i class="etp etp-tools"></i> Settings</div>
+        </div>
+    </div>
+    <div class="search-bar" ng-show="showSearch">
+        <div class="search-bar-back" ng-click="showSearch=false"><i class="etp etp-chevron-thin-left"></i></div>
+        <div class="search-bar-input-wrapper">
+            <input type="text" placeholder="Search..." class="search-bar-input" ng-model="search">
+        </div>
     </div>
 </div>

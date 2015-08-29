@@ -12,7 +12,7 @@
     </div>
     <div class="list-view" ng-show="showListView">
         <div class="list-view-content">
-            <div ng-repeat="item in map">
+            <div ng-repeat="item in map | filter:{name:search}">
                 <div class="cluster" ng-if="item.type=='cluster'">
                     <div class="cluster-title">{{item.name || item.location}} <span class="distance-tag">{{item.distance}}</span></div>
                     <div class="cluster-points">
