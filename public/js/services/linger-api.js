@@ -6,6 +6,7 @@ angular.module("linger.services").factory("lingerAPI", [ "$resource", function($
                 method: "GET",
                 isArray: false
             }
-        })
+        }),
+        chat: $resource("/api/chat/:msgdata")
     }
 }]);

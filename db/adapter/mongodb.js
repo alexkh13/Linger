@@ -4,6 +4,20 @@ var _ = require('underscore');
 
 module.exports = function(db) {
 
+    function insertMessageToDB(msgdata)
+    {
+        var deferred = q.defer();
+        db.collection("Messages").find(msgdata).toArray(function(err, docs) {
+            if(err) {
+                deferred.reject(err);
+            }
+            else {
+                deferred.resolve(docs);
+            }
+        });
+        return deferred.promise;
+    }
+
     function findGroups(f) {
         var deferred = q.defer();
         db.collection("groups").find(f).toArray(function(err, docs) {

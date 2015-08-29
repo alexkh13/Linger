@@ -1,5 +1,23 @@
-angular.module("linger.controllers").controller("ChatController", [ "$scope", "$stateParams", "$timeout", function ($scope, $stateParams, $timeout) {
+angular.module("linger.controllers").controller("ChatController", [ "$scope", "$stateParams", "$timeout","lingerAPI", function ($scope, $stateParams, $timeout, lingerAPI) {
     $scope.id = $stateParams.thread;
+
+
+
+
+
+
+    map = lingerAPI.geo.query({ latitude: $scope.currentLocation.lat, longitude: $scope.currentLocation.lng }, function() {
+        $scope.map = _.map(map, function(obj) {
+            return _.extend(obj, {
+                distance: getDistance(obj.location),
+                points: obj.points && _.map(obj.points, function(p) {
+                    return _.extend(p, {
+                        distance: getDistance(obj.location)
+                    });
+                })
+            });
+        });
+    });
 
     $scope.messages = [
         {
@@ -35,12 +53,20 @@ angular.module("linger.controllers").controller("ChatController", [ "$scope", "$
     ];
 
     $scope.send = function() {
-        $scope.messages.push({
-            me: true,
-            owner: "Alex Khmelnitsky",
-            content: $scope.message,
-            time: "18:37"
-        });
+        //$scope.messages.push({
+        //    //me: true,
+        //    //owner: "Alex Khmelnitsky",
+        //    //content: $scope.message,
+        //    //time: "18:37"
+        //}
+       // messages = lingerAPI.chat.query({msgstring:});
+
+        var DBdata = {
+            timestamp:date,
+            message:data.msg,
+            groupid:data.groupid
+        };
+
         $timeout(function() {
             $scope.messages.push(answers.shift());
         }, 2000);
