@@ -5,7 +5,7 @@
                 <span class="back-button" ng-click="goBack()">
                     <i class="etp etp-chevron-thin-left"></i>
                 </span>
-                <span class="title">???????</span>
+                <span class="title" ng-click="showRightPanel=true">{{title}}</span>
             </div>
             <div class="col-xs-2 col-md-2 options">
                 <span>
@@ -22,6 +22,13 @@
                     <i class="etp etp-attachment attachment"></i>
                 </span>
             <button class="submit-button" ng-class="{'no-text':!message}" ng-click="send()"><i class="etp etp-location-pin"></i></button>
+        </div>
+        <div class="right-panel" ng-show="showRightPanel">
+            <div ng-repeat="friend in friends" class="chat-row" ng-click="go(friend)">
+                <div class="chat-profile" style="background-image:url({{friend.picture.thumbnail}});"></div>
+                <div class="chat-content">
+                    {{ friend.name.first.capitalize() + " " +  friend.name.last.capitalize() }}</div>
+            </div>
         </div>
     </div>
 </div>

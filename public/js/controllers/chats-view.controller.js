@@ -2,6 +2,16 @@ angular.module("linger.controllers").controller("ChatsViewController", [ "$scope
 
     $scope.chats = [
         {
+            image: 1,
+            name: "test group",
+            group: true
+        },
+        {
+            image: 2,
+            name: "test group",
+            group: true
+        },
+        {
             name: "test group",
             group: true
         }

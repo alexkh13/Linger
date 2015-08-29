@@ -1,8 +1,7 @@
-angular.module("linger.controllers").controller("FriendsViewController", [ "$scope", "$q", "$http", "lingerAPI", "geolocation", function ($scope, $q, $http, lingerAPI, geolocation) {
-
+angular.module("linger.controllers").controller("FriendsViewController", [ "$scope", "$q", "$http", "$state", "lingerAPI", function ($scope, $q, $http, $state, lingerAPI) {
 
     var dummy = [];
-    dummy.length = 50;
+    dummy.length = 10;
 
     var promises = _.map(dummy, function() {
         return $http.get("https://randomuser.me/api/");
@@ -12,7 +11,14 @@ angular.module("linger.controllers").controller("FriendsViewController", [ "$sco
         $scope.friends = _.map(results,function(obj) {
             return obj.data.results[0].user
         });
+        lingerAPI.friends = _.indexBy($scope.friends, "registered");
     });
+
+    $scope.go = function(profile) {
+        $state.go("main.profile", {
+            id: profile.registered
+        })
+    }
 
 }]);
 
