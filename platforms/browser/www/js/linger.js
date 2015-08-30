@@ -10,11 +10,13 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
         var facebookAppId = 361668527356399;
         var facebookApiVer = "v2.2";
 
-        document.addEventListener("deviceready", function () {
-            setTimeout(function() {
-                $cordovaFacebookProvider.browserInit(facebookAppId, facebookApiVer);
-            }, 2000)
-        });
+        if (cordova.platformId === 'browser') {
+            document.addEventListener("deviceready", function () {
+                setTimeout(function () {
+                    $cordovaFacebookProvider.browserInit(facebookAppId, facebookApiVer);
+                }, 2000)
+            });
+        }
 
         $urlRouterProvider.otherwise("/");
         $stateProvider
@@ -30,7 +32,6 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                 resolve: {
                     login: [ "$q", "$timeout", "lingerAPI", "$state", function($q, $timeout, lingerAPI, $state) {
                         var deferred = $q.defer();
-                        $cordovaFacebookProvider.browserInit(facebookAppId, facebookApiVer);
                         document.addEventListener("deviceready", function () {
                             lingerAPI.auth.getUser(function(user) {
                                 if(user._id) {
