@@ -1,0 +1,27 @@
+<div class="page">
+    <div class="container-fluid top-bar">
+        <div class="row header">
+            <div class="col-xs-6 col-md-6 title">
+                <span class="back-button" ng-click="goBack()">
+                    <i class="etp etp-chevron-thin-left"></i>
+                </span>
+                <span class="title">Create</span>
+            </div>
+            <div class="col-xs-6 col-md-6 options">
+                <span>
+                    <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="view-content create-page">
+        <div class="create-page-content">
+            <input type="text" placeholder="Group Name">
+        </div>
+        <div class="create-page-footer">
+            <div class="create-button">
+                <i class="etp etp-check"></i>
+            </div>
+        </div>
+    </div>
+</div>

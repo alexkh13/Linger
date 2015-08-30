@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html ng-app="linger">
 <head lang="en">
-    <base href="/">
+    <!--<base href="/">-->
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src ws: http: https: 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title></title>
     <link href='fonts/roboto/roboto.css' rel='stylesheet' type='text/css'>
@@ -24,6 +27,8 @@
     <script language="javascript" src="js/libs/angular-1.4.3/angular.min.js"></script>
     <script language="javascript" src="js/libs/angular-1.4.3/angular-resource.min.js"></script>
     <script language="javascript" src="js/libs/angular-1.4.3/angular-animate.min.js"></script>
+    <script language="javascript" src="js/libs/ng-cordova/ng-cordova.js"></script>
+    <!--<script language="javascript" src="js/libs/ng-cordova/ng-cordova-mocks.js"></script>-->
     <!--<script language="javascript" src="js/libs/socket.min.js"></script>-->
     <script language="javascript" src="js/libs/socket.js"></script>
     <script language="javascript" src="js/libs/angularjs-geolocation.min.js"></script>
@@ -58,8 +63,14 @@
     <script language="javascript" src="js/services/linger-map-item.js"></script>
     <script language="javascript" src="js/services/linger-socket.js"></script>
     <script language="javascript" src="js/services/linger-api.js"></script>
+
+
+    <script language="javascript" src="cordova.js"></script>
+    <script language="javascript" src="plugins/com.phonegap.plugins.facebookconnect/facebookConnectPlugin.js"></script>
+
 </head>
 <body>
+<div id="fb-root"></div>
 <div class="main">
     <div ui-view style="height:100%;"></div>
 </div>

@@ -1,11 +1,23 @@
-angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
+angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
     .run([ "$rootScope", "$window", function($rootScope, $window) {
         $rootScope.goBack = function() {
             $window.history.back();
         };
     }])
-    .config([ "$stateProvider", "$urlRouterProvider", "$locationProvider", function($stateProvider, $urlRouterProvider, $locationProvider) {
-        $locationProvider.html5Mode(true);
+    .config([ "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", function($stateProvider, $urlRouterProvider, $cordovaFacebookProvider) {
+        $.support.cors=true;
+
+        var facebookAppId = 361668527356399;
+        var facebookApiVer = "v2.2";
+
+        if (cordova.platformId === 'browser') {
+            document.addEventListener("deviceready", function () {
+                setTimeout(function () {
+                    $cordovaFacebookProvider.browserInit(facebookAppId, facebookApiVer);
+                }, 2000)
+            });
+        }
+
         $urlRouterProvider.otherwise("/");
         $stateProvider
             .state("login", {
@@ -20,15 +32,17 @@ angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "l
                 resolve: {
                     login: [ "$q", "$timeout", "lingerAPI", "$state", function($q, $timeout, lingerAPI, $state) {
                         var deferred = $q.defer();
-                        lingerAPI.auth.getUser(function(user) {
-                            if(user._id) {
-                                deferred.resolve(user);
-                            }
-                            else {
-                                $state.go("login", {
-                                    location: "replace"
-                                });
-                            }
+                        document.addEventListener("deviceready", function () {
+                            lingerAPI.auth.getUser(function(user) {
+                                if(user._id) {
+                                    deferred.resolve(user);
+                                }
+                                else {
+                                    $state.go("login", {
+                                        location: "replace"
+                                    });
+                                }
+                            });
                         });
                         return deferred.promise;
                     }]
@@ -50,7 +64,7 @@ angular.module("linger", [ "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "l
                 controller: "CreateController"
             })
     }])
-    .controller("Main", ["$scope", "$timeout", "$http", "$state", function($scope, $timeout, $http, $state) {
+    .controller("Main", ["$scope", function($scope) {
 
         var tabs = {
             "chats": 0,
