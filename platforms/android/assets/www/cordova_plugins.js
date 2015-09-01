@@ -46,7 +46,8 @@ module.exports.metadata =
 {
     "cordova-plugin-camera": "1.2.0",
     "cordova-plugin-whitelist": "1.0.0",
-    "com.phonegap.plugins.facebookconnect": "0.11.0"
+    "com.phonegap.plugins.facebookconnect": "0.11.0",
+    "org.apache.cordova.geolocation": "0.3.12"
 }
 // BOTTOM OF METADATA
 });

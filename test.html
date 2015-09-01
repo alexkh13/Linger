@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="linger">
+<head lang="en">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/restangular/1.3.1/restangular.js"></script>
+    <script>
+        angular.module("linger", [ "restangular" ])
+                .config([ "RestangularProvider", function(RestangularProvider) {
+                    RestangularProvider.setBaseUrl("/api");
+                    RestangularProvider.setRestangularFields({
+                        id: "_id"
+                    })
+                }])
+                .controller("Main", function($scope, Restangular) {
+
+                    var chat = Restangular.all("chat");
+
+                    chat.getList({ longitude: 123, latitude: 123 }).then(function(groups) {
+                        $scope.groups = groups;
+                        $scope.messages = groups[0].getList("message").$object;
+                    });
+
+                });
+    </script>
+</head>
+<body ng-controller="Main">
+    <div ng-repeat="group in groups">
+        {{group}}
+    </div>
+<hr>
+    <div ng-repeat="message in messages">
+        {{message}}
+    </div>
+</body>
+</html>

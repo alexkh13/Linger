@@ -38,10 +38,12 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                                     deferred.resolve(user);
                                 }
                                 else {
-                                    $state.go("login", {
+                                    $state.go("login", null, {
                                         location: "replace"
                                     });
                                 }
+                            }, function(err) {
+                                alert(JSON.stringify(err));
                             });
                         });
                         return deferred.promise;

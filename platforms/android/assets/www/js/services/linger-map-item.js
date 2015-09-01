@@ -1,7 +1,7 @@
 angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapUtils) {
 
-    var markerTexture = PIXI.Texture.fromImage('/images/marker.png');
-    var clusterTexture = PIXI.Texture.fromImage('/images/cluster.png');
+    var markerTexture = PIXI.Texture.fromImage('images/marker.png');
+    var clusterTexture = PIXI.Texture.fromImage('images/cluster.png');
 
     // todo: use loader to avoid texture loading delay
     // width and height are set here to make sure there will be a value when creating map items

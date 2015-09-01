@@ -6,8 +6,12 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var cors = require('cors');
+var fs = require('fs');
 var app = express();
-var server = require('http').Server(app);
+var server = require('https').createServer({
+    key: fs.readFileSync('conf/key.pem'),
+    cert: fs.readFileSync('conf/cert.pem')
+}, app);
 var io = require('socket.io')(server);
 var MongoClient = require('mongodb').MongoClient;
 

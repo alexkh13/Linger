@@ -1,0 +1,10 @@
+branch-defaults:
+  master:
+    environment: Linger-dev
+global:
+  application_name: Linger
+  default_ec2_keyname: linger
+  default_platform: Node.js
+  default_region: us-west-2
+  profile: eb-cli
+  sc: git

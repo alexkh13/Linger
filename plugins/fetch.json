@@ -26,5 +26,13 @@
             "APP_ID": "361668527356399",
             "APP_NAME": "Linger"
         }
+    },
+    "org.apache.cordova.geolocation": {
+        "source": {
+            "type": "registry",
+            "id": "org.apache.cordova.geolocation"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

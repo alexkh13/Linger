@@ -3,6 +3,7 @@ var passport = require('passport');
 var CustomStrategy = require('passport-custom').Strategy;
 var FB = require('fb');
 var api = require('express').Router();
+var q = require('q');
 
 // passport authentication setup
 api.use(passport.initialize());
@@ -28,7 +29,7 @@ passport.use('facebook', new CustomStrategy(
     function(req, done) {
         var authResponse = req.body;
         FB.api('me', { fields: ['id', 'name'], access_token: authResponse.accessToken }, function (profile) {
-            req.db.updateUser(authResponse.userId, profile, authResponse.accessToken).then(function(user) {
+            req.db.updateUser(authResponse.userID, profile, authResponse.accessToken).then(function(user) {
                     done(null, user);
                 },
                 function(err) {

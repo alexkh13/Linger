@@ -146,7 +146,7 @@ module.exports = function(db) {
         updateUser: function(id, profile, accessToken) {
             var deferred = q.defer();
             db.collection("users").findAndModify(
-                { id: profile.id },
+                { id: id },
                 null,
                 { $set: { accessToken: accessToken }, $setOnInsert: profile },
                 { new: true, upsert: true },

@@ -12,7 +12,7 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
         })
     });
 
-    $cordovaGeolocation.getCurrentPosition({timeout: 10000, enableHighAccuracy: false}).then(function(data) {
+    $cordovaGeolocation.getCurrentPosition({timeout: 20000, enableHighAccuracy: true}).then(function(data) {
         $scope.currentLocation = {
             lat: data.coords.latitude,
             lng: data.coords.longitude
@@ -48,6 +48,8 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
             });
         });
 
+    }, function handleGeoLocationError(err) {
+        alert(JSON.stringify(err))
     });
 
     $scope.goCreate = function() {
