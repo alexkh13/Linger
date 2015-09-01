@@ -75,6 +75,9 @@
 <div id="fb-root"></div>
 <div class="main">
     <div ui-view style="height:100%;"></div>
+    <div class="error-view" ng-show="fetalError">
+        {{fetalError}}
+    </div>
 </div>
 </body>
 </html>
