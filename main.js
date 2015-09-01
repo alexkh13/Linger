@@ -76,6 +76,6 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
         res.sendFile(PUBLIC_DIR + "/index.html");
     });
 
-    server.listen(3000);
-
 });
+
+module.exports = app;

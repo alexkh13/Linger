@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+var app = require('../main');
+
+app.listen(process.env.PORT || 3000);
