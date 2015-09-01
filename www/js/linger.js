@@ -7,16 +7,11 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
     .config([ "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", function($stateProvider, $urlRouterProvider, $cordovaFacebookProvider) {
         $.support.cors=true;
 
-        var facebookAppId = 361668527356399;
-        var facebookApiVer = "v2.2";
-
-        if (cordova.platformId === 'browser') {
-            document.addEventListener("deviceready", function () {
-                setTimeout(function () {
-                    $cordovaFacebookProvider.browserInit(facebookAppId, facebookApiVer);
-                }, 2000)
-            });
-        }
+        window.fbAsyncInit = function() {
+            if (cordova.platformId === 'browser') {
+                $cordovaFacebookProvider.browserInit(FACEBOOK_APP_ID, FACEBOOK_API_VER);
+            }
+        };
 
         $urlRouterProvider.otherwise("/");
         $stateProvider
