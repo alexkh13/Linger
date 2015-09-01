@@ -53,6 +53,8 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
     if (err) throw err;
     console.log(">> Connected to Database");
 
+    initializeDB(db);
+
     var mongo = lingerDB.getAdapter('mongodb')(db);
 
     app.use(function(req, res, next) {
