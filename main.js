@@ -78,4 +78,4 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
 
 });
 
-module.exports = app;
+module.exports = server;

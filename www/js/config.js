@@ -1,1 +1,1 @@
-BACKEND_SERVER_URL="https://localhost:3000/";
+BACKEND_SERVER_URL="/";
