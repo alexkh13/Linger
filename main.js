@@ -8,10 +8,7 @@ var session = require('express-session');
 var cors = require('cors');
 var fs = require('fs');
 var app = express();
-var server = require('https').createServer({
-    key: fs.readFileSync('conf/key.pem'),
-    cert: fs.readFileSync('conf/cert.pem')
-}, app);
+var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var MongoClient = require('mongodb').MongoClient;
 
@@ -47,6 +44,11 @@ function initializeDB(db) {
             console.log(err);
         }
     });
+    db.collection('Messages').createIndex( { timestamp : 1 } ), function(err) {
+        if(err) {
+            console.log(err);
+        }
+    };
 }
 
 MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
@@ -62,6 +64,8 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
         req.io = io;
         next();
     });
+    require('./api/chat/Listener')(io,mongo);
+    //initializeDB(db);
 
     app.use("/api", require('./api'));
 
@@ -80,5 +84,5 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
 
 });
 
-//module.exports = server;
-module.exports = app;
+module.exports = server;
+//module.exports = app;

@@ -9,54 +9,64 @@ function handleError(err) {
 }
 
 /**
- * Get all groups
+ * Get Closest groups
  */
 chat.get("/", function(req, res) {
-    req.db.getGroups().then(function (docs) {
+    var loc = {
+        longitude: parseFloat(req.query.longitude),
+        latitude: parseFloat(req.query.latitude)
+    };
+    req.db.getClosestGroups(loc).then(function(docs) {
         res.send(docs);
     }, handleError);
 });
 
-chat.get("/:msgdata", function(req, res) {
+/**
+ * Get all groups
+ */
+chat.get("/:groupid", function(req, res) {
+    req.db.getGroups(req.param.groupid).then(function(docs) {
+        res.send(docs);
+    }, handleError);
+});
 
-    // so the message data needs to contain the message string and the groupid
-    var data = req.params.msgdata;
+/**
+ * Get last messages for group before timestamp
+ */
+chat.get("/:groupid/message/:timestamp",function(req,res){
+        req.db.getGroupMessagesBeforeTimestamp({
+            "groupid": req.params.groupid,
+            "timestamp": req.params.timestamp
+        }).then(function (docs) {
+            res.send(docs);
+        }, handleError);
+});
+
+/**
+ * Post a message to group
+ */
+chat.post("/:groupid/message", function(req, res) {
+
+    // so the message data needs to contain the message string and the groupid and the sending userid
+   // var data = ;
     var date = new Date().toUTCString();
 
     var DBdata = {
       timestamp:date,
-      message:data.msg,
-      groupid:data.groupid
+      message:req.body.msgdata,
+      groupid:req.params.groupid,
+      userid:req.user._id
     };
 
     // Push the message into the messages db
     req.db.insertMessageToDB(DBdata).then(function(docs)
     {
-        res.send(docs);
+       // res.send(docs);
     },handleError);
 
     //TODO: implement GCM send the message to all other members of the room
-
-
+    req.io.sockets.in(req.params.groupid).emit('updatechat',{"groupid":req.params.groupid,"timestamp":date,"message":req.body.msgdata, "userid":req.user._id});
 });
-
-
-
-
-/**
- * Get all groups close to a specific location
- */
-chat.get("/:longitude/:latitude", function(req, res) {
-    var loc = {
-longitude: parseFloat(req.params.longitude),
-    latitude: parseFloat(req.params.latitude)
-};
-req.db.getClosestGroups(loc).then(function(docs) {
-    res.send(docs);
-}, handleError);
-});
-
-
 
 /**
  * Create group

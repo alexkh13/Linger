@@ -4,7 +4,7 @@ var CustomStrategy = require('passport-custom').Strategy;
 var FB = require('fb');
 var api = require('express').Router();
 var q = require('q');
-
+var request = require('request');
 // passport authentication setup
 api.use(passport.initialize());
 api.use(passport.session());
@@ -28,13 +28,57 @@ api.use(passport.session());
 passport.use('facebook', new CustomStrategy(
     function(req, done) {
         var authResponse = req.body;
-        FB.api('me', { fields: ['id', 'name'], access_token: authResponse.accessToken }, function (profile) {
-            req.db.updateUser(authResponse.userID, profile, authResponse.accessToken).then(function(user) {
-                    done(null, user);
-                },
-                function(err) {
-                    done(err, false);
+        FB.api('me', { fields: ['id', 'name', 'picture'], access_token: authResponse.accessToken }, function (profile) {
+
+
+                //var p = profile();
+               var options = {
+                    host: profile.picture.data.url ,
+                    port: 80
+                };
+
+            request
+                .get(profile.picture.data.url)
+                .on('response', function(res) {
+
+                    var buffers = [];
+                    var length = 0;
+
+                    res.on("data", function(chunk) {
+
+                        // store each block of data
+                        length += chunk.length;
+                        buffers.push(chunk);
+
+                    });
+
+                    res.on("end", function() {
+
+                        // combine the binary data into single buffer
+                        var image =  Buffer.concat(buffers);
+
+                        // determine the type of the image
+                        // with image/jpeg being the default
+                        var type = 'image/jpeg';
+                        if (res.headers['content-type'] !== undefined)
+                            type = res.headers['content-type'];
+
+                        profile.picture = {type:type, image:image};
+
+                        req.db.updateUser(authResponse.userID, profile, authResponse.accessToken).then(function(user) {   done(null, user);
+                            },
+                            function(err) {
+                                done(err, false);
+                            });
+                    });
                 });
+
+           // req.db.updateUser(authResponse.userID, profile, authResponse.accessToken).then(function(user) {
+           //         done(null, user);
+           //     },
+           //     function(err) {
+           //         done(err, false);
+           //     });
         });
     }
 ));
@@ -42,6 +86,8 @@ passport.use('facebook', new CustomStrategy(
 api.post('/auth/facebook',
     passport.authenticate('facebook', { failureRedirect: '/login' }),
     function(req, res) {
+
+       // req.db.joinAllConnections();
         res.send(req.user);
     });
 
@@ -88,6 +134,7 @@ api.use(function(req, res, next) {
     else {
         next();
     }
+   // next();
 });
 
 api.use("/chat", require("./chat"));

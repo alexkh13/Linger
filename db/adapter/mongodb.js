@@ -4,19 +4,8 @@ var _ = require('underscore');
 
 module.exports = function(db) {
 
-    function insertMessageToDB(msgdata)
-    {
-        var deferred = q.defer();
-        db.collection("Messages").find(msgdata).toArray(function(err, docs) {
-            if(err) {
-                deferred.reject(err);
-            }
-            else {
-                deferred.resolve(docs);
-            }
-        });
-        return deferred.promise;
-    }
+
+
 
     function findGroups(f) {
         var deferred = q.defer();
@@ -36,6 +25,19 @@ module.exports = function(db) {
     }
 
     return {
+        insertMessageToDB: function(msgdata)
+        {
+            var deferred = q.defer();
+            db.collection("messages").insert(msgdata, function(err, inserted) {
+                if(err) {
+                    deferred.reject(err);
+                }
+                else {
+                    deferred.resolve(inserted.ops[0]);
+                }
+            });
+            return deferred.promise;
+        },
         getClosestGroups: function(loc) {
             return findGroups({
                 location: {
@@ -49,10 +51,25 @@ module.exports = function(db) {
                 }
             });
         },
-        getGroups: function() {
-            return findGroups();
+        getGroups: function(f)
+        {
+            return findGroups(f);
         },
-        insertCluster: function(loc) {
+    getGroupMessagesBeforeTimestamp: function (data)
+    {
+        var deferred = q.defer();
+        db.collection("messages").find({"groupid": data.groupid,"timestamp": {$lt: data.timestamp}}).sort({timestamp:1}).limit(20).toArray(function(err, docs) {
+            if(err) {
+                deferred.reject(err);
+            }
+            else {
+                deferred.resolve(docs);
+            }
+        });
+
+        return deferred.promise;
+    },
+    insertCluster: function(loc) {
             var deferred = q.defer();
 
             var group = {
@@ -116,10 +133,11 @@ module.exports = function(db) {
             });
             return deferred.promise;
         },
-        insertGroup: function(name, loc, clusterId) {
+        // TODO: add image to the group and id
+        insertGroup: function(name,/*image,*/ loc, clusterId) {
             var deferred = q.defer();
 
-            var group = { name: name, type: "point", location: loc2arr(loc), cluster: clusterId };
+            var group = { name: name,/*image:image,*/ type: "point", location: loc2arr(loc), cluster: clusterId };
             db.collection("groups").insert(group, function(err, inserted) {
                 if(err) {
                     deferred.reject(err);

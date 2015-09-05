@@ -1,5 +1,7 @@
 angular.module("linger.services").factory("UserService", [ function() {
 
+    var currUser = {};
+
     var users = {
         bar: {
             name: "Bar Refaeli"
@@ -16,8 +18,11 @@ angular.module("linger.services").factory("UserService", [ function() {
     };
 
     return {
-        getUser: function(id) {
-            return angular.copy(users[id])
+        setUser:function(user){
+            currUser = user;
+        },
+        getUser: function() {
+            return currUser;
         }
     }
 

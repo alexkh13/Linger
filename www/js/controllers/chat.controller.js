@@ -1,19 +1,21 @@
-angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http) {
+angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular) {
 
-    $scope.title = $stateParams.id;
-
-    var dummy = [];
-    dummy.length = 20;
-
-    var promises = _.map(dummy, function() {
-        return $http.get("https://randomuser.me/api/");
+    notificationsManager.GetGroupNameById($stateParams.id).then(function(room) {
+        $scope.title = room.GroupName;
     });
 
-    $q.all(promises).then(function(results) {
-        $scope.friends = _.map(results,function(obj) {
-            return obj.data.results[0].user
-        });
-        lingerAPI.friends = _.indexBy($scope.friends, "registered");
+    $scope.messages = lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(docs){
+
+        $scope.messages.push.apply($scope.messages, docs);
+    });
+
+    notificationsManager.register($stateParams.id, function(data){
+            $scope.messages.push(data);
+        }
+    );
+
+    $scope.$on("$destroy", function() {
+        notificationsManager.unregister($stateParams.id);
     });
 
     $scope.go = function(friend) {
@@ -25,62 +27,6 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
     $scope.messages = [];
     var answers = [];
 
-    if ($scope.title == "אלגוריתמים") {
-
-        $scope.messages = [
-            {
-                image: 1,
-                owner: "Dan Man",
-                content: "מתי הפסקה?",
-                time: "18:30"
-            },
-            {
-                image: 2,
-                owner: "Maria Hopkins",
-                content: "באמת מתי?!?!? הוא מייבש אותנו פה....",
-                time: "18:32"
-            },
-            {
-                image: 3,
-                owner: "Michael Gregoire",
-                content: "וואיי לגמריי.. שמישהוש יגיד לו",
-                time: "18:33"
-            },
-            {
-                image: 4,
-                owner: "Tamar Cohen",
-                content: "יאללה בלאגן!",
-                time: "18:34"
-            },
-            {
-                image: 5,
-                owner: "אמנון דקל",
-                content: "חכו חכו זה תכף מגיע",
-                time: "18:35"
-            }
-        ];
-
-        answers = [
-            {
-                image: 2,
-                owner: "Maria Hopkins",
-                content: "תספר לי על זה :(",
-                time: "18:37"
-            }
-        ];
-
-    }
-    else {
-        answers = [
-            {
-                image: 2,
-                owner: "Maria Hopkins",
-                content: "Hey!",
-                time: "18:37"
-            }
-        ];
-    }
-
     $scope.send = function() {
         //$scope.messages.push({
         //    //me: true,
@@ -88,18 +34,11 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
         //    //content: $scope.message,
         //    //time: "18:37"
         //}
-       // messages = lingerAPI.chat.query({msgstring:});
 
-        var DBdata = {
-            timestamp:date,
-            message:data.msg,
-            groupid:data.groupid
-        };
-
-        $timeout(function() {
-            $scope.messages.push(answers.shift());
-        }, 2000);
+        // getting the froup messages - Consult alex groupid
+        var sendData = { msgdata:$scope.message };
         $scope.message = "";
+        Restangular.one('chat', $stateParams.id).customPOST(sendData, "message");
     };
 
     $(".chat-input").on("keydown", function(ev) {

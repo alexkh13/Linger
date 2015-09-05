@@ -1,7 +1,14 @@
 angular.module("linger.services").factory("lingerAPI", [ "$resource", function($resource) {
     return {
-        geo: $resource(BACKEND_SERVER_URL + "api/chat/:longitude/:latitude"),
-        auth: $resource(BACKEND_SERVER_URL + "api/auth/:type", null, {
+    //"/api/chat?longitude=x&latitude=y""	//get all groups close to (x,y)
+    //"/api/chat"	//create group
+    //"/api/chat/:groupid"//	get group with id=:groupid
+    //"/api/chat/:groupid/message"	//get last ? messages for group
+    //                                                      /api/chat/:groupid/message/:timestamp	get last ? Before :timestamp
+    ///api/chat/:groupid/message	send message to group
+
+    chat: $resource("/api/chat"),
+        auth: $resource("/api/auth/:type", null, {
             getUser: {
                 method: "GET",
                 isArray: false
@@ -14,6 +21,8 @@ angular.module("linger.services").factory("lingerAPI", [ "$resource", function($
                 }
             }
         }),
-        chat: $resource("/api/chat/:msgdata")
+        group:$resource("/api/chat/groups/:groupid"),
+        msg: $resource("/api/chat/:groupid/message/:timestamp"),
+        users: $resource("/api/user")
     }
 }]);

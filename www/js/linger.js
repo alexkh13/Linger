@@ -1,5 +1,5 @@
-angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
-    .run([ "$rootScope", "$window", "$state", function($rootScope, $window, $state) {
+angular.module("linger", [ "restangular", "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
+    .run([ "$rootScope", "$window", function($rootScope, $window) {
         $rootScope.goBack = function() {
             $window.history.back();
         };
@@ -15,7 +15,7 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                 }
             });
     }])
-    .config([ "$httpProvider", "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", function($httpProvider, $stateProvider, $urlRouterProvider, $cordovaFacebookProvider) {
+    .config([ "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", "RestangularProvider", function($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, RestangularProvider) {
         $.support.cors=true;
 
         window.fbAsyncInit = function() {
@@ -23,6 +23,7 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                 $cordovaFacebookProvider.browserInit(FACEBOOK_APP_ID, FACEBOOK_API_VER);
             }
         };
+        RestangularProvider.setBaseUrl("/api");
 
         $urlRouterProvider.otherwise("/");
         $stateProvider
@@ -36,11 +37,12 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                 templateUrl: "html/main.html",
                 controller: "Main",
                 resolve: {
-                    login: [ "$q", "$timeout", "lingerAPI", "$state", function($q, $timeout, lingerAPI, $state) {
+                    login: [ "$q", "$timeout", "lingerAPI", "$state", "UserService", function($q, $timeout, lingerAPI, $state, UserService) {
                         var deferred = $q.defer();
                         document.addEventListener("deviceready", function () {
                             lingerAPI.auth.getUser(function(user) {
                                 if(user._id) {
+                                    UserService.setUser(user);
                                     deferred.resolve(user);
                                 }
                                 else {
@@ -91,6 +93,6 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
         });
 
     }]);
-angular.module("linger.services", [ "ngResource", "btford.socket-io" ]);
+angular.module("linger.services", [ "ngResource", "btford.socket-io", "LocalStorageModule" ]);
 angular.module("linger.controllers", [ "geolocation" ]);
 angular.module("linger.directives", [ "hmTouchEvents" ]);
