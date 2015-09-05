@@ -2,26 +2,6 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
 
     $scope.title = $stateParams.id;
 
-    var dummy = [];
-    dummy.length = 20;
-
-    var promises = _.map(dummy, function() {
-        return $http.get("https://randomuser.me/api/");
-    });
-
-    $q.all(promises).then(function(results) {
-        $scope.friends = _.map(results,function(obj) {
-            return obj.data.results[0].user
-        });
-        lingerAPI.friends = _.indexBy($scope.friends, "registered");
-    });
-
-    $scope.go = function(friend) {
-        $state.go("main.chat", {
-            id: friend.name.first.capitalize() + " " +  friend.name.last.capitalize()
-        })
-    };
-
     $scope.messages = [];
     var answers = [];
 

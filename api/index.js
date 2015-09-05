@@ -104,19 +104,6 @@ passport.deserializeUser(function(req, id, done) {
     })
 });
 
-//// Redirect the user to Facebook for authentication.  When complete,
-//// Facebook will redirect the user back to the application at
-////     /auth/facebook/callback
-//api.get('/auth/facebook', passport.authenticate('facebook', { scope: ['user_about_me', 'user_friends'] }));
-
-//// Facebook will redirect the user to this URL after approval.  Finish the
-//// authentication process by attempting to obtain an access token.  If
-//// access was granted, the user will be logged in.  Otherwise,
-//// authentication has failed.
-//api.get('/auth/facebook/callback',
-//    passport.authenticate('facebook', { successRedirect: '/',
-//        failureRedirect: '/login' }));
-
 api.get('/auth', function(req, res) {
     res.send(req.user);
 });
@@ -139,5 +126,6 @@ api.use(function(req, res, next) {
 
 api.use("/chat", require("./chat"));
 api.use("/user", require("./user"));
+api.use("/map", require("./map"));
 
 module.exports = api;

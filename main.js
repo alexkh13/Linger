@@ -10,6 +10,7 @@ var fs = require('fs');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+
 var MongoClient = require('mongodb').MongoClient;
 
 var lingerDB = require('./db');
@@ -17,7 +18,7 @@ var lingerDB = require('./db');
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 //app.use(logger('dev'));
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "2mb" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
@@ -69,15 +70,15 @@ MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {
 
     app.use("/api", require('./api'));
 
-    app.all('/cordova.js', function(req, res, next) {
+    app.all('/cordova.js', function(req, res) {
         res.sendFile(CORDOVA_WWW + '/cordova.js');
     });
 
-    app.all('/cordova_plugins.js', function(req, res, next) {
+    app.all('/cordova_plugins.js', function(req, res) {
         res.sendFile(CORDOVA_WWW + '/cordova_plugins.js');
     });
 
-    app.all('/*', function(req, res, next) {
+    app.all('/*', function(req, res) {
         // Just send the index.html for other files to support HTML5Mode
         res.sendFile(PUBLIC_DIR + "/index.html");
     });

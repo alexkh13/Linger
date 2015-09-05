@@ -9,6 +9,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         var resizeRan = false;
         var currentExpended, expandTimeout;
         var maxX, minX, maxY, minY;
+        var worldMin = 500;
 
         var ANCHOR = {
             x: undefined,
@@ -33,6 +34,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 maxY = Math.max(maxY || 0, pos.y);
                 minX = Math.min(minX || Infinity, pos.x);
                 minY = Math.min(minY || Infinity, pos.y);
+
                 for (j=0; j<items.length; j++) {
                     if (items[i] == items[j] || !items[j] || !items[i]) continue;
                     try {
@@ -165,7 +167,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 mask: centerView,
                 position: point.position,
                 map: this,
-                before: point.before
+                before: point.before,
+                image: point.image
             });
 
             items.push(item);
@@ -195,31 +198,31 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 y: stage.start.y + position.y
             };
 
-            var padding = 200;
+            //var padding = 200;
 
             // stage is moving the opposite way
-            var limit = [
-                -maxX - padding + renderer.width,
-                -maxY - padding + renderer.height,
-                -minX + padding,
-                -minY + padding
-            ];
+            //var limit = [
+            //    -maxX - padding + renderer.width,
+            //    -maxY - padding + renderer.height,
+            //    -minX + padding,
+            //    -minY + padding
+            //];
 
             // right
-            if (stage.dest.x < limit[0])
-                stage.dest.x = limit[0] - ((limit[0] - stage.dest.x)/6);
+            //if (stage.dest.x < limit[0])
+            //    stage.dest.x = limit[0] - ((limit[0] - stage.dest.x)/6);
 
             // bottom
-            if (stage.dest.y < limit[1])
-                stage.dest.y = limit[1] - ((limit[1] - stage.dest.y)/6);
+            //if (stage.dest.y < limit[1])
+            //    stage.dest.y = limit[1] - ((limit[1] - stage.dest.y)/6);
 
             // left
-            if (stage.dest.x > limit[2])
-                stage.dest.x = limit[2] - ((limit[2] - stage.dest.x)/6);
+            //if (stage.dest.x > limit[2])
+            //    stage.dest.x = limit[2] - ((limit[2] - stage.dest.x)/6);
 
             // top
-            if (stage.dest.y > limit[3])
-                stage.dest.y = limit[3] - ((limit[3] - stage.dest.y)/6);
+            //if (stage.dest.y > limit[3])
+            //    stage.dest.y = limit[3] - ((limit[3] - stage.dest.y)/6);
 
         };
 
@@ -234,47 +237,6 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
             panStarted = null;
 
             var padding = 200;
-
-            // stage is moving the opposite way
-            var limit = [
-                -maxX - padding + renderer.width,
-                -maxY - padding + renderer.height,
-                -minX + padding,
-                -minY + padding
-            ];
-
-            var fix = {
-                x: undefined,
-                y: undefined
-            };
-
-            if (stage.position.x < limit[0])
-                fix.x = limit[0];
-
-            if (stage.position.y < limit[1])
-                fix.y = limit[1];
-
-            if (stage.position.x >  limit[2])
-                fix.x = limit[2];
-
-            if (stage.position.y > limit[3])
-                fix.y = limit[3];
-
-            if(fix.x && !fix.y) {
-                fix.y = stage.position.y;
-                this.panTo(fix);
-                return;
-            }
-
-            if(fix.y && !fix.x) {
-                fix.x = stage.position.x;
-                this.panTo(fix);
-                return;
-            }
-
-            if(fix.y && fix.x) {
-                this.panTo(fix);
-            }
         };
 
         function pushAll(pushDistance, center, except) {
@@ -313,7 +275,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                     name: item.name,
                     location: item.location,
                     position: currentPosition,
-                    before: item
+                    before: item,
+                    image: item.image
                 });
                 added.child = true;
                 added.hideTag();

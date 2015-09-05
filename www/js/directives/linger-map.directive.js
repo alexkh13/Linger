@@ -69,6 +69,7 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
                     sub_points: _.map(item.points, function(point) {
                         return {
                             name: point.name,
+                            image: point.image,
                             location: {
                                 lng: point.location[0],
                                 lat: point.location[1]

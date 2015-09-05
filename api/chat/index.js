@@ -16,8 +16,20 @@ chat.get("/", function(req, res) {
         longitude: parseFloat(req.query.longitude),
         latitude: parseFloat(req.query.latitude)
     };
-    req.db.getClosestGroups(loc).then(function(docs) {
-        res.send(docs);
+    req.db.getClosestClusters(loc).then(function(clusters) {
+        var clustersById = _.indexBy(clusters, "_id");
+        var clusterIds = _.pluck(clusters, "_id");
+        req.db.getGroups({ type: "point", cluster: { $in: clusterIds }}).then(function(points) {
+            _.each(points, function(point) {
+                if (point.cluster && clustersById[point.cluster]) {
+                    if(!clustersById[point.cluster].points) {
+                        clustersById[point.cluster].points = [];
+                    }
+                    clustersById[point.cluster].points.push(point);
+                }
+            });
+            res.send(_.values(clustersById));
+        });
     }, handleError);
 });
 
@@ -74,17 +86,14 @@ chat.post("/:groupid/message", function(req, res) {
 chat.post("/", function(req, res) {
 
     var params = {
-        name: req.body.name,
+        groupName: req.body.groupName,
+        clusterName: req.body.clusterName,
         location: {
             longitude: parseFloat(req.body.location.longitude),
             latitude: parseFloat(req.body.location.latitude)
-        }
+        },
+        image: req.body.image
     };
-
-    function notifyall(cluster) {
-        req.io.sockets.emit("markers:created", cluster);
-        res.end();
-    }
 
     function pluckLocations(objs) {
         return _.map(objs, function(obj) {
@@ -103,47 +112,56 @@ chat.post("/", function(req, res) {
         }
     }
 
-    req.db.getClosestGroups(params.location).then(function(docs) {
+    req.db.getClosestGroups(params.location, 300).then(function(docs) {
 
         function insertGroup(clusterId) {
-            req.db.insertGroup(name, params.location, clusterId).then(function(group) {
-                req.io.sockets.emit("markers:created", group);
-                res.end();
+            req.db.insertGroup(params.groupName, params.location, clusterId, params.image).then(function(group) {
+                // when added to a cluster, we need to update cluster location accordingly
+                if (clusterId) {
+                    req.db.getGroups({
+                        type: "point",
+                        cluster: clusterId
+                    }).then(function(points) {
+                        var clusterLocation = getCenter(pluckLocations(points).concat(params.location));
+                        db.req.updateGroup(clusterId, {
+                            location: clusterLocation
+                        });
+                        db.req.updateGroup(_.pluck(points, "_id"), {
+                            clusterLocation: clusterLocation
+                        });
+                    });
+                }
+                res.send(group);
             }, handleError);
         }
 
         if(docs.length) {
             if(docs[0].type == "cluster") {
                 insertGroup(docs[0]._id);
-                //req.db.updateCluster(docs[0]._id, getCenter(pluckLocations(docs[0].points).concat(loc))).then(function() {
-                //    req.db.appendCluster(docs[0]._id, loc).then(function(cluster) {
-                //        notifyall(cluster);
-                //    }, handleError);
-                //}, handleError);
             }
             else {
-                var points = _.filter(docs, function(obj) { return obj.type != "cluster" });
-                if (docs[0].cluster) {
+                if(docs[0].cluster && geolib.getDistance(params.location, docs[0].clusterLocation) < 300) {
                     insertGroup(docs[0].cluster);
                 }
                 else {
-                    req.db.insertCluster(getCenter(pluckLocations(points).concat(loc))).then(function(cluster) {
-                        req.db.updateGroup(docs[0]._id, {
+                    var points = _.filter(docs, function(doc) {
+                        return doc.type == "point" && !doc.cluster;
+                    });
+                    var clusterLocation = getCenter(pluckLocations(points).concat(params.location));
+                    req.db.insertCluster(clusterLocation, params.clusterName).then(function(cluster) {
+                        req.db.updateGroup(_.pluck(points, "_id"), {
                             cluster: cluster._id
-                        });
-                        insertGroup(cluster._id);
-                        //req.db.appendCluster(cluster._id, loc).then(function(cluster) {
-                        //    req.db.removeIds(_.pluck(points, "_id")).then(function() {
-                        //        notifyall(cluster);
-                        //    }, handleError);
-                        //}, handleError)
+                        }).then(function() {
+                            insertGroup(cluster._id);
+                        }, handleError);
                     }, handleError);
                 }
-
             }
         }
         else {
-            insertGroup();
+            req.db.insertCluster(params.location, params.clusterName).then(function(cluster) {
+                insertGroup(cluster._id);
+            }, handleError);
         }
 
     },handleError);

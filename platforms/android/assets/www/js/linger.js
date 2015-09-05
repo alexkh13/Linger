@@ -1,22 +1,32 @@
-angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
-    .run([ "$rootScope", "$window", function($rootScope, $window) {
+angular.module("linger", [ "ngMaterial", "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
+    .run([ "$rootScope", "$window", "$state", function($rootScope, $window, $state) {
         $rootScope.goBack = function() {
             $window.history.back();
         };
+        $rootScope.$on('$stateChangeError',
+            function(event, toState, toParams, fromState, fromParams, error){
+                if(error.status == 401){
+                    $state.go("login", null, {
+                        location: "replace"
+                    });
+                }
+                else {
+                    $rootScope.fetalError = error;
+                }
+            });
     }])
-    .config([ "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", function($stateProvider, $urlRouterProvider, $cordovaFacebookProvider) {
+    .config([ "$httpProvider", "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", "$mdThemingProvider", function($httpProvider, $stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $mdThemingProvider) {
         $.support.cors=true;
 
-        var facebookAppId = 361668527356399;
-        var facebookApiVer = "v2.2";
+        $mdThemingProvider.theme('default')
+            .primaryPalette('light-blue')
+            .accentPalette('red');
 
-        if (cordova.platformId === 'browser') {
-            document.addEventListener("deviceready", function () {
-                setTimeout(function () {
-                    $cordovaFacebookProvider.browserInit(facebookAppId, facebookApiVer);
-                }, 2000)
-            });
-        }
+        window.fbAsyncInit = function() {
+            if (cordova.platformId === 'browser') {
+                $cordovaFacebookProvider.browserInit(FACEBOOK_APP_ID, FACEBOOK_API_VER);
+            }
+        };
 
         $urlRouterProvider.otherwise("/");
         $stateProvider
@@ -43,7 +53,7 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                                     });
                                 }
                             }, function(err) {
-                                alert(JSON.stringify(err));
+                                return deferred.reject(err);
                             });
                         });
                         return deferred.promise;
@@ -64,7 +74,8 @@ angular.module("linger", [ "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.b
                 url: "create",
                 templateUrl: "html/create.html",
                 controller: "CreateController"
-            })
+            });
+
     }])
     .controller("Main", ["$scope", function($scope) {
 

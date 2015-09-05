@@ -1,5 +1,5 @@
-angular.module("linger", [ "restangular", "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
-    .run([ "$rootScope", "$window", function($rootScope, $window) {
+angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate", "ngMap", "ui.router", "ui.bootstrap", "linger.services", "linger.controllers", "linger.directives" ])
+    .run([ "$rootScope", "$window", "$state", function($rootScope, $window, $state) {
         $rootScope.goBack = function() {
             $window.history.back();
         };
@@ -15,8 +15,12 @@ angular.module("linger", [ "restangular", "ngCordova", "ngAnimate", "ngMap", "ui
                 }
             });
     }])
-    .config([ "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", "RestangularProvider", function($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, RestangularProvider) {
+    .config([ "$httpProvider", "$stateProvider", "$urlRouterProvider", "$cordovaFacebookProvider", "$mdThemingProvider", "RestangularProvider", function($httpProvider, $stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $mdThemingProvider, RestangularProvider) {
         $.support.cors=true;
+
+        $mdThemingProvider.theme('default')
+            .primaryPalette('light-blue')
+            .accentPalette('red');
 
         window.fbAsyncInit = function() {
             if (cordova.platformId === 'browser') {

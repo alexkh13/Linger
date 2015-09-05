@@ -1,21 +1,21 @@
 angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular) {
 
     notificationsManager.GetGroupNameById($stateParams.id).then(function(room) {
-        $scope.title = room.GroupName;
+        $scope.title = room.name;
     });
 
-    $scope.messages = lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(docs){
+    var dummy = [];
+    dummy.length = 20;
 
-        $scope.messages.push.apply($scope.messages, docs);
+    var promises = _.map(dummy, function() {
+        return $http.get("https://randomuser.me/api/");
     });
 
-    notificationsManager.register($stateParams.id, function(data){
-            $scope.messages.push(data);
-        }
-    );
-
-    $scope.$on("$destroy", function() {
-        notificationsManager.unregister($stateParams.id);
+    $q.all(promises).then(function(results) {
+        $scope.friends = _.map(results,function(obj) {
+            return obj.data.results[0].user
+        });
+        lingerAPI.friends = _.indexBy($scope.friends, "registered");
     });
 
     $scope.go = function(friend) {

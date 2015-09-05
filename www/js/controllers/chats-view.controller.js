@@ -10,10 +10,14 @@ angular.module("linger.controllers").controller("ChatsViewController", [ "$scope
         };
 
         // Get all user groups{
-        $scope.chats = lingerAPI.chat.query({
+        var clusters = lingerAPI.chat.query({
             "latitude": $scope.currentLocation.lat,
             "longitude": $scope.currentLocation.lng
+        }, function() {
+            $scope.chats = _.flatten(_.pluck(clusters, "points"));
         });
+
+
     },function(err)
       {
           console.log(err);

@@ -1,16 +1,6 @@
-angular.module("linger.controllers").controller("MapViewController", [ "$scope", "$state", "$timeout", "lingerSocket", "lingerAPI", "$cordovaGeolocation", function ($scope, $state, $timeout, lingerSocket, lingerAPI, $cordovaGeolocation) {
+angular.module("linger.controllers").controller("MapViewController", [ "$scope", "$http", "$state", "$timeout", "lingerSocket", "lingerAPI", "$cordovaGeolocation", function ($scope, $http, $state, $timeout, lingerSocket, lingerAPI, $cordovaGeolocation) {
 
     var map = $scope.map = [];
-
-    lingerSocket.on("markers:created", function(obj) {
-        map.push(obj);
-    });
-
-    lingerSocket.on("markers:initialize", function(data) {
-        angular.forEach(data, function(obj) {
-            map.push(obj);
-        })
-    });
 
     $cordovaGeolocation.getCurrentPosition({timeout: 20000, enableHighAccuracy: true}).then(function(data) {
         $scope.currentLocation = {

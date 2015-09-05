@@ -25,11 +25,11 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
             localStorageService.set("MQ",messageQueue);
 
             // Local notifications
-            cordova.plugins.notification.local.schedule({
-                title: "New Message",
-                message: data.message,
-                icon: "image/mlogo.png"
-            });
+//             cordova.plugins.notification.local.schedule({
+//                 title: "New Message",
+//                 message: data.message,
+//                 icon: "image/mlogo.png"
+//             });
         }
     });
 
@@ -42,7 +42,7 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
         };
 
         lingerAPI.chat.query(loc, function(groups) {
-            roomsDeferred.resolve(_.indexBy(groups, "_id"));
+            roomsDeferred.resolve(_.indexBy(_.flatten(_.pluck(groups, "points")), "_id"));
         });
     },function(err)
     {
