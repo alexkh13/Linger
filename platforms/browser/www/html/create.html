@@ -5,7 +5,7 @@
                 <span class="back-button" ng-click="goBack()">
                     <i class="etp etp-chevron-thin-left"></i>
                 </span>
-                <span class="title">Create</span>
+                <span class="title">Create Group</span>
             </div>
             <div class="col-xs-6 col-md-6 options">
                 <span>
@@ -15,11 +15,86 @@
         </div>
     </div>
     <div class="view-content create-page">
-        <div class="create-page-content">
-            <input type="text" placeholder="Group Name">
+        <div class="create-page-content" loader="creatingGroup">
+            <div class="group-part top-part">
+                <div>
+                    <label><i class="etp etp-message"></i> Give the group a name</label>
+                    <input type="text" placeholder="Group name" ng-model="groupName">
+                </div>
+                <div ng-class="{'active': isPrivate}">
+                    <md-switch ng-model="isPrivate" aria-label="Private group">
+                        Make it private
+                    </md-switch>
+                </div>
+                <div class="group-avatar-wrapper">
+                    <div class="group-avatar" ng-click="choosePicture()" style="background-image: url({{groupImage}})">
+                        <div ng-hide="groupImage">
+                            <div><i class="etp etp-image-inverted"></i></div>
+                            <div class="group-avatar-text">Choose</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- PUBLIC -->
+            <div ng-hide="isPrivate" class="group-part">
+                <div>
+                    <label><i class="etp etp-location-pin"></i> Where are you?</label>
+                    <div ng-hide="locationLoading">
+                        <div ng-show="locMode=='custom'">
+                            <div>
+                                <input type="text" placeholder="Custom place name" ng-model="customClusterName" ng-disabled="locDisabled">
+                            </div>
+                            <div class="group-loc-info" ng-show="locDisabled" ng-click="showWhy()">
+                                <i class="etp etp-info-with-circle"></i> Why can't I change that?
+                            </div>
+                        </div>
+                        <div ng-show="locMode=='predefined'">
+                            <select ng-model="predefinedClusterName" ng-change="predefinedChanged()">
+                                <option ng-repeat="loc in locations" value="{{loc.name}}">{{loc.name}}</option>
+                            </select>
+                        </div>
+                        <div ng-hide="locDisabled">
+                            <md-radio-group ng-model="locMode">
+                                <md-radio-button ng-value="'predefined'" aria-label="Places around you">
+                                    Places around you
+                                </md-radio-button>
+                                <md-radio-button ng-value="'custom'" aria-label="Choose your own">
+                                    Choose your own
+                                </md-radio-button>
+                            </md-radio-group>
+                        </div>
+                    </div>
+                    <md-progress-circular md-mode="indeterminate" ng-show="locationLoading"></md-progress-circular>
+                </div>
+            </div>
+            <!-- PRIVATE -->
+            <div ng-show="isPrivate">
+                <div class="group-part">
+                    <label><i class="etp etp-plus"></i> Who can add people?</label>
+                    <div>
+                        <md-radio-group ng-model="privateAdd">
+                            <md-radio-button ng-value="'everyone'" aria-label="Everyone">
+                                Everyone
+                            </md-radio-button>
+                            <md-radio-button ng-value="'me'" aria-label="Just me">
+                                Just me
+                            </md-radio-button>
+                            <md-radio-button ng-value="'specific'" aria-label="Let me choose">
+                                Let me choose
+                            </md-radio-button>
+                        </md-radio-group>
+                    </div>
+                </div>
+                <div>
+                    <label><i class="etp etp-users"></i> Add people</label>
+                    <div>
+
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="create-page-footer">
-            <div class="create-button">
+        <div class="create-page-footer" ng-hide="creatingGroup">
+            <div class="create-button" ng-click="createGroup()">
                 <i class="etp etp-check"></i>
             </div>
         </div>

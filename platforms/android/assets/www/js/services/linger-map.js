@@ -167,7 +167,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 mask: centerView,
                 position: point.position,
                 map: this,
-                before: point.before
+                before: point.before,
+                image: point.image
             });
 
             items.push(item);
@@ -274,7 +275,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                     name: item.name,
                     location: item.location,
                     position: currentPosition,
-                    before: item
+                    before: item,
+                    image: item.image
                 });
                 added.child = true;
                 added.hideTag();

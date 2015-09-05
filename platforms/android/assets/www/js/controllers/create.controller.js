@@ -1,4 +1,4 @@
-angular.module("linger.controllers").controller("CreateController", [ "$scope", "$state", "$stateParams", "$http", "$cordovaGeolocation", "$cordovaCamera", function ($scope, $state, $stateParams, $http, $cordovaGeolocation, $cordovaCamera) {
+angular.module("linger.controllers").controller("CreateController", [ "$scope", "$state", "$stateParams", "$http", "$cordovaGeolocation", "$cordovaCamera", "$mdDialog", function ($scope, $state, $stateParams, $http, $cordovaGeolocation, $cordovaCamera, $mdDialog) {
 
     $scope.locMode = "predefined";
     $scope.privateAdd = "everyone";
@@ -73,6 +73,19 @@ angular.module("linger.controllers").controller("CreateController", [ "$scope", 
         });
     }
 
+
+    $scope.showWhy = function() {
+        var alert = $mdDialog.alert({
+            title: 'Unfortunately,',
+            content: 'Someone already created a group in your location. Multiple names for the same location isn\'t supported at this moment.',
+            ok: 'Got it!'
+        });
+        $mdDialog
+            .show( alert )
+            .finally(function() {
+                alert = undefined;
+            });
+    }
 
 }]);
 

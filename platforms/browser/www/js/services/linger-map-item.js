@@ -1,7 +1,7 @@
 angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapUtils) {
 
-    var markerTexture = PIXI.Texture.fromImage('/images/marker.png');
-    var clusterTexture = PIXI.Texture.fromImage('/images/cluster.png');
+    var markerTexture = PIXI.Texture.fromImage('images/marker.png');
+    var clusterTexture = PIXI.Texture.fromImage('images/cluster.png');
 
     // todo: use loader to avoid texture loading delay
     // width and height are set here to make sure there will be a value when creating map items
@@ -32,13 +32,15 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         var text = new PIXI.Text(label ,{font : '18px Arial', fill : isCluster ? 0xFFFFFF : 0x000, align : 'center'});
 
         if (!isCluster) {
-            var img = new PIXI.Sprite.fromImage("images/groups/" + (name || (cnt++%13+1)) + ".jpg");
+            var image = options.image ? "data:image/jpeg;base64," + options.image : "images/group_placeholder.jpg";
+            var img = new PIXI.Sprite.fromImage(image);
             var imgMask = new PIXI.Graphics();
             imgMask.beginFill(0x000);
-            imgMask.drawCircle(35,30,25);
+            imgMask.drawCircle(34   ,25,20);
             imgMask.endFill();
-            img.width = 50;
-            img.height = 50;
+            img.position.x = 5;
+            img.width = 55;
+            img.height = 55;
             img.mask = imgMask;
             container.addChild(imgMask);
             container.addChild(img);

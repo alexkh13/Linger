@@ -21,7 +21,7 @@
         <div class="tab-view explore" id="explore" ng-controller="MapViewController" ng-include="'html/map-view.html'"></div>
         <div class="tab-view friends" id="friends" ng-controller="FriendsViewController" ng-include="'html/friends-view.html'"></div>
     </div>
-    <div ui-view class="page-view"></div>
+    <div ui-view class="page-view">{{error}}</div>
     <div class="dropdown-menu-popup-backdrop" ng-show="showDropDownPopup" ng-click="showDropDownPopup=false">
         <div class="dropdown-menu-popup" ng-show="showDropDownPopup">
             <div class="settings-line"><i class="etp etp-plus"></i> New Group</div>

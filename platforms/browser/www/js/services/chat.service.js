@@ -1,4 +1,4 @@
-angular.module("linger.services").factory("ChatService", [ "UserService", function(UserService) {
+angular.module("linger.services").factory("ChatService", [ function() {
 
     var TYPES = {
         GROUP: "",

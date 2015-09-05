@@ -21,7 +21,7 @@
                     <label><i class="etp etp-message"></i> Give the group a name</label>
                     <input type="text" placeholder="Group name" ng-model="groupName">
                 </div>
-                <div>
+                <div ng-class="{'active': isPrivate}">
                     <md-switch ng-model="isPrivate" aria-label="Private group">
                         Make it private
                     </md-switch>
@@ -44,7 +44,7 @@
                             <div>
                                 <input type="text" placeholder="Custom place name" ng-model="customClusterName" ng-disabled="locDisabled">
                             </div>
-                            <div class="group-loc-info" ng-show="locDisabled">
+                            <div class="group-loc-info" ng-show="locDisabled" ng-click="showWhy()">
                                 <i class="etp etp-info-with-circle"></i> Why can't I change that?
                             </div>
                         </div>

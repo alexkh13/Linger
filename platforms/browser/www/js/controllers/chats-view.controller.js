@@ -1,28 +1,42 @@
-angular.module("linger.controllers").controller("ChatsViewController", [ "$scope", "$state", function ($scope, $state) {
+angular.module("linger.controllers").controller("ChatsViewController", [ "$scope", "$state","lingerAPI","UserService","$cordovaGeolocation","notificationsManager","lingerSocket", function ($scope, $state, lingerAPI,UserService,$cordovaGeolocation,notificationsManager,lingerSocket) {
 
-    $scope.chats = [
-        {
-            image: 1,
-            name: "test group",
-            group: true
-        },
-        {
-            image: 2,
-            name: "test group",
-            group: true
-        },
-        {
-            name: "test group",
-            group: true
-        }
-    ];
+    $cordovaGeolocation.getCurrentPosition({timeout: 10000, enableHighAccuracy: false}).then(function(data) {
 
-    $scope.go = function(id) {
+
+
+        $scope.currentLocation = {
+            lat: data.coords.latitude,
+            lng: data.coords.longitude
+        };
+
+        // Get all user groups{
+        var clusters = lingerAPI.chat.query({
+            "latitude": $scope.currentLocation.lat,
+            "longitude": $scope.currentLocation.lng
+        }, function() {
+            $scope.chats = _.flatten(_.pluck(clusters, "points"));
+        });
+
+
+    },function(err)
+      {
+          console.log(err);
+      });
+
+
+    //$scope.chats = [
+    //    {
+    //        image: 1,
+    //        name: "test group",
+    //        group: true
+    //    },
+
+
+    $scope.go = function(data) {
         $state.go("main.chat", {
-            id: id
+            id: data._id
         });
     }
-
 }]);
 
 

@@ -1,18 +1,8 @@
-angular.module("linger.controllers").controller("MapViewController", [ "$scope", "$state", "$timeout", "lingerSocket", "lingerAPI", "$cordovaGeolocation", function ($scope, $state, $timeout, lingerSocket, lingerAPI, $cordovaGeolocation) {
+angular.module("linger.controllers").controller("MapViewController", [ "$scope", "$http", "$state", "$timeout", "lingerSocket", "lingerAPI", "$cordovaGeolocation", function ($scope, $http, $state, $timeout, lingerSocket, lingerAPI, $cordovaGeolocation) {
 
     var map = $scope.map = [];
 
-    lingerSocket.on("markers:created", function(obj) {
-        map.push(obj);
-    });
-
-    lingerSocket.on("markers:initialize", function(data) {
-        angular.forEach(data, function(obj) {
-            map.push(obj);
-        })
-    });
-
-    $cordovaGeolocation.getCurrentPosition({timeout: 10000, enableHighAccuracy: false}).then(function(data) {
+    $cordovaGeolocation.getCurrentPosition({timeout: 20000, enableHighAccuracy: true}).then(function(data) {
         $scope.currentLocation = {
             lat: data.coords.latitude,
             lng: data.coords.longitude
@@ -35,7 +25,7 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
         }
 
 
-        map = lingerAPI.geo.query({ latitude: $scope.currentLocation.lat, longitude: $scope.currentLocation.lng }, function() {
+        map = lingerAPI.chat.query({ latitude: $scope.currentLocation.lat, longitude: $scope.currentLocation.lng }, function() {
             $scope.map = _.map(map, function(obj) {
                 return _.extend(obj, {
                     distance: getDistance(obj.location),
@@ -48,6 +38,8 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
             });
         });
 
+    }, function handleGeoLocationError(err) {
+        alert(JSON.stringify(err))
     });
 
     $scope.goCreate = function() {

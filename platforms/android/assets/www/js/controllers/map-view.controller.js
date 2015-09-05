@@ -25,7 +25,7 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
         }
 
 
-        map = lingerAPI.geo.query({ latitude: $scope.currentLocation.lat, longitude: $scope.currentLocation.lng }, function() {
+        map = lingerAPI.chat.query({ latitude: $scope.currentLocation.lat, longitude: $scope.currentLocation.lng }, function() {
             $scope.map = _.map(map, function(obj) {
                 return _.extend(obj, {
                     distance: getDistance(obj.location),
