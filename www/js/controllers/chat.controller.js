@@ -1,15 +1,28 @@
-angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular) {
+angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", "UserService", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular, UserService) {
 
     notificationsManager.GetGroupNameById($stateParams.id).then(function(room) {
         $scope.title = room.name;
     });
 
-    $scope.messages = lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(docs) {
-        $scope.message.push.apply($scope.messages, docs);
+    $scope.messages = [];
+
+    $scope.myImage = UserService.getUser().picture.image;
+
+    lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(messages) {
+        $scope.messages = _.map(_.sortBy(messages, "timestamp"), function(message) {
+            return _.extend(message, {
+                me: message.userid == UserService.getUser()._id
+            })
+        });
+        $scope.$broadcast("scrollToBottom");
     });
 
     notificationsManager.register($stateParams.id, function(data){
+        if (UserService.getUser()._id == data.userid) {
+            data.me = true;
+        }
         $scope.messages.push(data);
+        $scope.$broadcast("scrollToBottom");
     });
 
     $scope.$on("$destroy", function() {

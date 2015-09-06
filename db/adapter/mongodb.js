@@ -72,7 +72,7 @@ module.exports = function(db) {
         getGroupMessagesBeforeTimestamp: function (data)
         {
             var deferred = q.defer();
-            db.collection("messages").find({"groupid": data.groupid,"timestamp": {$lt: data.timestamp}}).sort({timestamp:1}).limit(20).toArray(function(err, docs) {
+            db.collection("messages").find({"groupid": data.groupid,"timestamp": {$lt: data.timestamp}}).limit(20).sort({timestamp:-1}).toArray(function(err, docs) {
                 if(err) {
                     deferred.reject(err);
                 }

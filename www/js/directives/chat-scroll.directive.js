@@ -7,7 +7,11 @@ angular.module("linger.directives").directive("chatScroll", [ "$timeout", functi
                 $(element).scrollTop($(element)[0].scrollHeight);
             }
 
-            scrollToBottom();
+            scope.$on("scrollToBottom", function(s, force) {
+                if(force || element[0].scrollHeight == element.scrollTop() + element.height()) {
+                    $timeout(scrollToBottom);
+                }
+            });
         }
     }
 }]);

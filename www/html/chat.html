@@ -1,16 +1,15 @@
 <div class="page conversation-page">
     <div class="container-fluid top-bar">
         <div class="row header">
-            <div class="col-xs-10 col-md-10 title">
+            <div class="col-xs-9 col-md-9 title">
                 <span class="back-button" ng-click="goBack()">
                     <i class="etp etp-chevron-thin-left"></i>
                 </span>
                 <span class="title" ng-click="showRightPanel=true">{{title}}</span>
             </div>
-            <div class="col-xs-2 col-md-2 options">
-                <span>
-                    <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
-                </span>
+            <div class="col-xs-3 col-md-3 options">
+                <i class="etp etp-users" ng-click=""></i>
+                <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
             </div>
         </div>
     </div>
@@ -19,7 +18,7 @@
         <div class="input-panel">
                 <span class="chat-input-wrapper">
                     <input type="text" class="chat-input" ng-model="message" placeholder="Write message here" auto-direction>
-                    <i class="etp etp-attachment attachment"></i>
+                    <i class="etp etp-attachment attachment ng-hide"></i>
                 </span>
             <button class="submit-button" ng-class="{'no-text':!message}" ng-click="send()"><i class="etp etp-location-pin"></i></button>
         </div>

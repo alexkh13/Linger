@@ -55,7 +55,7 @@ passport.use('facebook', new CustomStrategy(
                     res.on("end", function() {
 
                         // combine the binary data into single buffer
-                        var image =  Buffer.concat(buffers);
+                        var image =  Buffer.concat(buffers).toString("base64");
 
                         // determine the type of the image
                         // with image/jpeg being the default

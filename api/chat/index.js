@@ -73,7 +73,7 @@ chat.post("/:groupid/message", function(req, res) {
     // Push the message into the messages db
     req.db.insertMessageToDB(DBdata).then(function(docs)
     {
-       // res.send(docs);
+       res.end();
     },handleError);
 
     //TODO: implement GCM send the message to all other members of the room
