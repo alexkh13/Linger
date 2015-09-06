@@ -4,28 +4,17 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
         $scope.title = room.name;
     });
 
-    var dummy = [];
-    dummy.length = 20;
-
-    var promises = _.map(dummy, function() {
-        return $http.get("https://randomuser.me/api/");
+    $scope.messages = lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(docs) {
+        $scope.message.push.apply($scope.messages, docs);
     });
 
-    $q.all(promises).then(function(results) {
-        $scope.friends = _.map(results,function(obj) {
-            return obj.data.results[0].user
-        });
-        lingerAPI.friends = _.indexBy($scope.friends, "registered");
+    notificationsManager.register($stateParams.id, function(data){
+        $scope.messages.push(data);
     });
 
-    $scope.go = function(friend) {
-        $state.go("main.chat", {
-            id: friend.name.first.capitalize() + " " +  friend.name.last.capitalize()
-        })
-    };
-
-    $scope.messages = [];
-    var answers = [];
+    $scope.$on("$destroy", function() {
+        notificationsManager.unregister($stateParams.id);
+    });
 
     $scope.send = function() {
         //$scope.messages.push({
