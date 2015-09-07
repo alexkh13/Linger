@@ -3,6 +3,9 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
         $rootScope.goBack = function() {
             $window.history.back();
         };
+        $rootScope.refreshMap = function() {
+            $rootScope.$broadcast("refreshMap");
+        };
         $rootScope.$on('$stateChangeError',
             function(event, toState, toParams, fromState, fromParams, error){
                 if(error.status == 401){

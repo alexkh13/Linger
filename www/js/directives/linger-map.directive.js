@@ -64,6 +64,7 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
 
             scope.$on("lingerMapItemCreate", function(context,  item) {
                 map.add({
+                    id: item._id,
                     name: item.name,
                     location: { lng: item.location[0], lat: item.location[1] },
                     sub_points: _.map(item.points, function(point) {
@@ -77,6 +78,10 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
                         }
                     })
                 });
+            });
+
+            scope.$on("lingerMapItemDestroy", function(context, item) {
+                map.remove(item._id);
             });
 
             scope.$watch("currentLocation", function(loc) {

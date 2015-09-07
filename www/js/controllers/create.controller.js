@@ -1,4 +1,4 @@
-angular.module("linger.controllers").controller("CreateController", [ "$scope", "$state", "$stateParams", "$http", "$cordovaGeolocation", "$cordovaCamera", "$mdDialog", function ($scope, $state, $stateParams, $http, $cordovaGeolocation, $cordovaCamera, $mdDialog) {
+angular.module("linger.controllers").controller("CreateController", [ "$scope", "$state", "lingerSocket", "$http", "$cordovaGeolocation", "$cordovaCamera", "$mdDialog", function ($scope, $state, lingerSocket, $http, $cordovaGeolocation, $cordovaCamera, $mdDialog) {
 
     $scope.locMode = "predefined";
     $scope.privateAdd = "everyone";
@@ -69,9 +69,11 @@ angular.module("linger.controllers").controller("CreateController", [ "$scope", 
             image: imageData
         };
         $http.post(BACKEND_SERVER_URL + "api/chat", data).then(function (result) {
-            $scope.goBack();
+            $scope.refreshMap();
+            lingerSocket.emit("subscribe", { room: result.data._id });
+            $state.go("main.chat", { id: result.data._id}, { location: "replace" });
         });
-    }
+    };
 
 
     $scope.showWhy = function() {

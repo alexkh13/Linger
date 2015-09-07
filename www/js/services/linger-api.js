@@ -7,7 +7,12 @@ angular.module("linger.services").factory("lingerAPI", [ "$resource", function($
     //                                                      /api/chat/:groupid/message/:timestamp	get last ? Before :timestamp
     ///api/chat/:groupid/message	send message to group
 
-        chat: $resource(BACKEND_SERVER_URL + "api/chat"),
+        chat: $resource(BACKEND_SERVER_URL + "api/chat/:id", null, {
+            getGroup: {
+                method: "GET",
+                isArray: false
+            }
+        }),
         auth: $resource(BACKEND_SERVER_URL + "api/auth/:type", null, {
             getUser: {
                 method: "GET",

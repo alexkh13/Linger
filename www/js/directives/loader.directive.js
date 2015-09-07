@@ -3,7 +3,8 @@ angular.module("linger.directives").directive("loader", [ "$compile", function($
         link: function(scope, element, attrs) {
             var ld = angular.element("<div>");
             ld.addClass("loader-content");
-            ld.append($compile("<md-progress-circular md-mode='indeterminate'>")(scope));
+            ld.append($compile("<table width='100%' height='100%'><tr><td width='100%' height='100%' align='center' valign='middle'>" +
+                "<md-progress-circular md-mode='indeterminate'></td></tr></table>")(scope));
             element.append(ld);
             ld.hide();
             scope.$watch(attrs.loader, function(value) {

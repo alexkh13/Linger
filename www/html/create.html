@@ -21,7 +21,7 @@
                     <label><i class="etp etp-message"></i> Give the group a name</label>
                     <input type="text" placeholder="Group name" ng-model="groupName">
                 </div>
-                <div ng-class="{'active': isPrivate}">
+                <div ng-class="{'active': isPrivate}" style="visibility:hidden">
                     <md-switch ng-model="isPrivate" aria-label="Private group">
                         Make it private
                     </md-switch>

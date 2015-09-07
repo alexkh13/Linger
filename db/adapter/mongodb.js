@@ -4,12 +4,11 @@ var _ = require('underscore');
 
 module.exports = function(db) {
 
-
-
-
-    function findGroups(f) {
+    function find(collection, f, single) {
+        var col = db.collection(collection);
+        var method = single ? col.findOne : col.find;
         var deferred = q.defer();
-        db.collection("groups").find(f).toArray(function(err, docs) {
+        var h = function(err, docs) {
             if(err) {
                 console.log(err);
                 deferred.reject(err);
@@ -17,7 +16,12 @@ module.exports = function(db) {
             else {
                 deferred.resolve(docs);
             }
-        });
+        };
+        var args = single ? [f, h] : [f];
+        var result = method.apply(col, args);
+        if(!single) {
+            result.toArray(h);
+        }
         return deferred.promise;
     }
 
@@ -40,7 +44,7 @@ module.exports = function(db) {
             return deferred.promise;
         },
         getClosestGroups: function(loc, distance) {
-            return findGroups({
+            return find("groups", {
                 location: {
                     $near: {
                         $geometry: {
@@ -53,7 +57,7 @@ module.exports = function(db) {
             });
         },
         getClosestClusters: function(loc, distance) {
-            return findGroups({
+            return find("groups", {
                 type: "cluster",
                 location: {
                     $near: {
@@ -67,7 +71,10 @@ module.exports = function(db) {
             });
         },
         getGroups: function(f) {
-            return findGroups();
+            return find("groups", f);
+        },
+        getGroup: function(id) {
+            return find("groups", { _id: new ObjectID(id) }, true);
         },
         getGroupMessagesBeforeTimestamp: function (data)
         {
@@ -143,6 +150,34 @@ module.exports = function(db) {
 
             return deferred.promise;
         },
+        insertPrivateGroup: function(initiator, target) {
+            var deferred = q.defer();
+
+            target = new ObjectID(target);
+
+            db.collection('groups').findAndModify(
+                { $or: [ { initiator: initiator, target: target }, {initiator: target, target: initiator}] }, // query
+                null,  // sort order
+                { type: "personal", initiator: initiator, target: target}, // insert
+                { upsert: true }, // options: insert
+                function(err, object) {
+                    if(err) {
+                        deferred.reject(err);
+                    }
+                    else {
+                        if(object.lastErrorObject && object.lastErrorObject.upserted) {
+                            find("groups", { _id: object.lastErrorObject.upserted}, true).then(function(object) {
+                                deferred.resolve(object);
+                            });
+                        }
+                        else {
+                            deferred.resolve(object.value);
+                        }
+                    }
+                });
+
+            return deferred.promise;
+        },
         getUserById: function(id) {
             var deferred = q.defer();
             db.collection("users").findOne({ _id: new ObjectID(id) }, function(err, user) {
@@ -171,6 +206,12 @@ module.exports = function(db) {
                     }
                 });
             return deferred.promise;
+        },
+        findUsers: function(luid) {
+            return find("users", { _id: { $not: { $in: [luid] } } });
+        },
+        findUser: function(uid) {
+            return find("users", { _id: new ObjectID(uid) }, true);
         }
     }
 };

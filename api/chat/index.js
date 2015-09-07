@@ -37,8 +37,23 @@ chat.get("/", function(req, res) {
  * Get all groups
  */
 chat.get("/:groupid", function(req, res) {
-    req.db.getGroups(req.param.groupid).then(function(docs) {
-        res.send(docs);
+    req.db.getGroup(req.params.groupid).then(function(doc) {
+        switch(doc.type) {
+            case "personal":
+                // expose only real user name
+                var userId = doc.initiator.id == req.user._id.id ? doc.target : doc.initiator;
+                req.db.findUser(userId).then(function(user) {
+                    res.send({
+                        type: "personal",
+                        name: user.name,
+                        image: (user.picture||{}).image
+                    });
+                }, handleError);
+                break;
+            default:
+                return res.send(doc);
+
+        }
     }, handleError);
 });
 
@@ -85,6 +100,13 @@ chat.post("/:groupid/message", function(req, res) {
  */
 chat.post("/", function(req, res) {
 
+    if (req.body.target) {
+        req.db.insertPrivateGroup(req.user._id, req.body.target).then(function(group) {
+            res.send(group);
+        }, handleError);
+        return;
+    }
+
     var params = {
         groupName: req.body.groupName,
         clusterName: req.body.clusterName,
@@ -112,7 +134,7 @@ chat.post("/", function(req, res) {
         }
     }
 
-    req.db.getClosestGroups(params.location, 300).then(function(docs) {
+    req.db.getClosestGroups(params.location, 150).then(function(docs) {
 
         function insertGroup(clusterId) {
             req.db.insertGroup(params.groupName, params.location, clusterId, params.image).then(function(group) {
@@ -123,11 +145,11 @@ chat.post("/", function(req, res) {
                         cluster: clusterId
                     }).then(function(points) {
                         var clusterLocation = getCenter(pluckLocations(points).concat(params.location));
-                        db.req.updateGroup(clusterId, {
-                            location: clusterLocation
+                        req.db.updateGroup(clusterId, {
+                            location: [clusterLocation.longitude, clusterLocation.latitude]
                         });
-                        db.req.updateGroup(_.pluck(points, "_id"), {
-                            clusterLocation: clusterLocation
+                        req.db.updateGroup(_.pluck(points, "_id"), {
+                            clusterLocation: [clusterLocation.longitude, clusterLocation.latitude]
                         });
                     });
                 }
@@ -140,10 +162,8 @@ chat.post("/", function(req, res) {
                 insertGroup(docs[0]._id);
             }
             else {
-                if(docs[0].cluster && geolib.getDistance(params.location, docs[0].clusterLocation) < 300) {
-                    insertGroup(docs[0].cluster);
-                }
-                else {
+
+                function createNewCluster() {
                     var points = _.filter(docs, function(doc) {
                         return doc.type == "point" && !doc.cluster;
                     });
@@ -155,6 +175,20 @@ chat.post("/", function(req, res) {
                             insertGroup(cluster._id);
                         }, handleError);
                     }, handleError);
+                }
+
+                if (docs[0].cluster) {
+                    req.db.getGroup(docs[0].cluster).then(function(cluster) {
+                        if (geolib.getDistance(params.location, cluster.location) < 300) {
+                            insertGroup(docs[0].cluster);
+                        }
+                        else {
+                            createNewCluster();
+                        }
+                    })
+                }
+                else {
+                    createNewCluster();
                 }
             }
         }

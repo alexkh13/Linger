@@ -1,6 +1,6 @@
 angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", "UserService", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular, UserService) {
 
-    notificationsManager.GetGroupNameById($stateParams.id).then(function(room) {
+    notificationsManager.GetGroupById($stateParams.id).then(function(room) {
         $scope.title = room.name;
     });
 

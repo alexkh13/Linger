@@ -7,4 +7,17 @@ user.get("/friends", function(req, res) {
     })
 });
 
+user.get("/lookup", function(req, res) {
+    var loc = {
+        longitude: parseFloat(req.query.longitude),
+        latitude: parseFloat(req.query.latitude)
+    };
+    req.db.findUsers(req.user._id).then(function(users) {
+        res.send(users);
+    }, function(err) {
+        res.status(500);
+        res.send(err);
+    })
+});
+
 module.exports = user;

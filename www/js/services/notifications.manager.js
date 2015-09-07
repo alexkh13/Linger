@@ -42,7 +42,7 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
         };
 
         lingerAPI.chat.query(loc, function(groups) {
-            roomsDeferred.resolve(_.indexBy(_.flatten(_.pluck(groups, "points")), "_id"));
+            roomsDeferred.resolve(rooms = _.indexBy(_.flatten(_.pluck(groups, "points")), "_id"));
         });
     },function(err)
     {
@@ -64,10 +64,18 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
         unregister: function(groupid) {
             delete registeredControllers[groupid];
         },
-        GetGroupNameById: function(groupid)
+        GetGroupById: function(groupid)
         {
-            return roomsDeferred.promise.then(function(rooms) {
-                return (rooms[groupid]);
+            if (rooms[groupid]) return $q.when(rooms[groupid]);
+            return roomsDeferred.promise.then(function(r) {
+                if (r[groupid]) {
+                    return r[groupid];
+                }
+                else {
+                    return lingerAPI.chat.getGroup({id:groupid}).$promise.then(function(data) {
+                        return rooms[data._id] = data;
+                    });
+                }
             });
         }
     //function clearRoomNotifications(groupid)

@@ -78,6 +78,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         }
 
         function collapseItem() {
+            if (!currentExpended) return;
             clearTimeout(expandTimeout);
             currentExpended.unpin();
             for(var i=0; i<items.length; i++) {
@@ -157,6 +158,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         this.add = function(point) {
 
             var item = new MapItem({
+                id: point.id,
                 name: point.name,
                 location: point.location,
                 children: point.sub_points,
@@ -175,6 +177,17 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
 
             return item;
 
+        };
+
+        this.remove = function(id) {
+            collapseItem();
+            for(var i=0;i<items.length;i++) {
+                if(items[i].id == id) {
+                    items[i].remove();
+                    break;
+                }
+            }
+            items.splice(i, 1);
         };
 
         var panStarted;
