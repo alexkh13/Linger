@@ -1,17 +1,34 @@
 /**
  * Created by Brutus on 30/08/2015.
  */
-angular.module("linger.services").factory("notificationsManager",["$q", "$stateParams","lingerSocket", "localStorageService", "$cordovaGeolocation", "lingerAPI", function($q, $stateParams, lingerSocket, localStorageService, $cordovaGeolocation, lingerAPI) {
+angular.module("linger.services").factory("notificationsManager",["$q", "$stateParams","lingerSocket", "localStorageService", "$cordovaGeolocation", "lingerAPI","UserService", function($q, $stateParams, lingerSocket, localStorageService, $cordovaGeolocation, lingerAPI, UserService) {
     var rooms = {};
 
     var registeredControllers = {};
     var messageQueue = localStorageService.get("MQ") || {};
 
+    lingerSocket.on("adduser", function(data){
+
+      if(registeredControllers[data.groupid] && UserService.getUser()._id != data.user._id)
+      {
+          var adata = {messages:data.messages, user:data.user,add:1}
+          registeredControllers[data.groupid](data);
+      }
+    });
+
+    lingerSocket.on("removeuser", function(data){
+        if(registeredControllers[data.groupid] && UserService.getUser()._id != data.user._id)
+        {
+            var adata = {messages:data.messages, user:data.user,add:0}
+            registeredControllers[data.groupid](data);
+        }
+    });
+
     lingerSocket.on("updatechat", function(data){
 
         if(registeredControllers[data.groupid])
         {
-            registeredControllers[data.groupid](data);
+            registeredControllers[data.groupid]({messages:data});
             // TODO Ask Alex how to reference the messages + identify that owner sent it - data.owner
             //$scope.messages.push({"owner":data.owner, "content":data.msg, "time":data.time});
         }
@@ -63,6 +80,10 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
         },
         unregister: function(groupid) {
             delete registeredControllers[groupid];
+        },
+        GetMQ: function()
+        {
+            return(messageQueue);
         },
         GetGroupById: function(groupid)
         {

@@ -14,8 +14,9 @@ module.exports = function(io,db){
             });
         });
 
-        socket.on('subscribe', function(data) { socket.join(data.room); })
+        socket.on('subscribe', function(data) {
+            socket.join(data.groupid); });
 
-        socket.on('unsubscribe', function(data) { socket.leave(data.room); })
+        socket.on('unsubscribe', function(data) { socket.leave(data.groupid); });
     });
 };

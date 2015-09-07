@@ -11,6 +11,8 @@ function handleError(err) {
 /**
  * Get Closest groups
  */
+GroupUsers = {};
+
 chat.get("/", function(req, res) {
     var loc = {
         longitude: parseFloat(req.query.longitude),
@@ -64,9 +66,30 @@ chat.get("/:groupid/message/:timestamp",function(req,res){
         req.db.getGroupMessagesBeforeTimestamp({
             "groupid": req.params.groupid,
             "timestamp": req.params.timestamp
-        }).then(function (docs) {
-            res.send(docs);
+        }).then(function (docs)
+        {
+            if(!GroupUsers[req.params.groupid]) {
+                GroupUsers[req.params.groupid] = [];
+                GroupUsers[req.params.groupid] = _.indexBy({},"id",function(a){return a});
+            }
+
+            GroupUsers[req.params.groupid].push(req.user);
+
+            req.io.sockets.in(req.params.groupid).emit('adduser',{user: req.user, groupid:req.params.groupid});
+
+            res.send([docs, GroupUsers[req.params.groupid]]);
         }, handleError);
+});
+
+chat.post("/leave", function(req, res) {
+    if(!GroupUsers[req.body.groupid]) {
+        GroupUsers[req.body.groupid] = [];
+    }
+
+    //GroupUsers[req.params.groupid].find(req.user)
+    GroupUsers[req.body.groupid] = _.without(GroupUsers[req.body.groupid], _.findWhere(GroupUsers[req.body.groupid], {id: req.user.id}));
+
+    req.io.sockets.in(req.body.groupid).emit('removeuser',{user: req.user, groupid:req.body.groupid});
 });
 
 /**
