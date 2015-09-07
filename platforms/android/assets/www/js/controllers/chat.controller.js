@@ -1,31 +1,33 @@
-angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular) {
+angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", "UserService", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular, UserService) {
 
-    notificationsManager.GetGroupNameById($stateParams.id).then(function(room) {
+    notificationsManager.GetGroupById($stateParams.id).then(function(room) {
         $scope.title = room.name;
     });
 
-    var dummy = [];
-    dummy.length = 20;
-
-    var promises = _.map(dummy, function() {
-        return $http.get("https://randomuser.me/api/");
-    });
-
-    $q.all(promises).then(function(results) {
-        $scope.friends = _.map(results,function(obj) {
-            return obj.data.results[0].user
-        });
-        lingerAPI.friends = _.indexBy($scope.friends, "registered");
-    });
-
-    $scope.go = function(friend) {
-        $state.go("main.chat", {
-            id: friend.name.first.capitalize() + " " +  friend.name.last.capitalize()
-        })
-    };
-
     $scope.messages = [];
-    var answers = [];
+
+    $scope.myImage = UserService.getUser().picture.image;
+
+    lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(messages) {
+        $scope.messages = _.map(_.sortBy(messages, "timestamp"), function(message) {
+            return _.extend(message, {
+                me: message.userid == UserService.getUser()._id
+            })
+        });
+        $scope.$broadcast("scrollToBottom");
+    });
+
+    notificationsManager.register($stateParams.id, function(data){
+        if (UserService.getUser()._id == data.userid) {
+            data.me = true;
+        }
+        $scope.messages.push(data);
+        $scope.$broadcast("scrollToBottom");
+    });
+
+    $scope.$on("$destroy", function() {
+        notificationsManager.unregister($stateParams.id);
+    });
 
     $scope.send = function() {
         //$scope.messages.push({

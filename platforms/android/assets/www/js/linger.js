@@ -3,6 +3,9 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
         $rootScope.goBack = function() {
             $window.history.back();
         };
+        $rootScope.refreshMap = function() {
+            $rootScope.$broadcast("refreshMap");
+        };
         $rootScope.$on('$stateChangeError',
             function(event, toState, toParams, fromState, fromParams, error){
                 if(error.status == 401){
@@ -27,7 +30,7 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
                 $cordovaFacebookProvider.browserInit(FACEBOOK_APP_ID, FACEBOOK_API_VER);
             }
         };
-        RestangularProvider.setBaseUrl("/api");
+        RestangularProvider.setBaseUrl(BACKEND_SERVER_URL + "api");
 
         $urlRouterProvider.otherwise("/");
         $stateProvider

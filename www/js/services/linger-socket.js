@@ -1,8 +1,8 @@
 angular.module("linger.services").factory("lingerSocket", [ "socketFactory","UserService", function(socketFactory,UserService) {
-  //  var myIoSocket = io.connect(BACKEND_SERVER_URL ,{userid: UserService.getUser()._id});
+    var myIoSocket = io.connect(BACKEND_SERVER_URL == "/" ? undefined : BACKEND_SERVER_URL);
 
     mySocket = socketFactory({
-       // ioSocket: myIoSocket,
+        ioSocket: myIoSocket,
         prefix: ''
     });
 

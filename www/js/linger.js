@@ -30,7 +30,7 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
                 $cordovaFacebookProvider.browserInit(FACEBOOK_APP_ID, FACEBOOK_API_VER);
             }
         };
-        RestangularProvider.setBaseUrl("/api");
+        RestangularProvider.setBaseUrl(BACKEND_SERVER_URL + "api");
 
         $urlRouterProvider.otherwise("/");
         $stateProvider

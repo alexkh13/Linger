@@ -23,6 +23,8 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
         var parentContainer = options.container;
         var pinned = false;
 
+        this.id = options.id;
+
         var isCluster = children && !!children.length;
 
         var label = name || (isCluster ? children.length : (location.lng + "," + location.lat));
