@@ -34,6 +34,13 @@ module.exports = [
         "runs": true
     },
     {
+        "file": "plugins/phonegap-plugin-barcodescanner/www/barcodescanner.js",
+        "id": "phonegap-plugin-barcodescanner.BarcodeScanner",
+        "clobbers": [
+            "cordova.plugins.barcodeScanner"
+        ]
+    },
+    {
         "file": "plugins/com.phonegap.plugins.facebookconnect/facebookConnectPlugin.js",
         "id": "com.phonegap.plugins.facebookconnect.FacebookConnectPlugin",
         "clobbers": [
@@ -44,10 +51,12 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
+    "cordova-plugin-android-support-v4": "21.0.1",
     "cordova-plugin-camera": "1.2.0",
     "cordova-plugin-whitelist": "1.0.0",
-    "com.phonegap.plugins.facebookconnect": "0.11.0",
-    "org.apache.cordova.geolocation": "0.3.12"
+    "org.apache.cordova.geolocation": "0.3.12",
+    "phonegap-plugin-barcodescanner": "4.0.2",
+    "com.phonegap.plugins.facebookconnect": "0.11.0"
 }
 // BOTTOM OF METADATA
 });

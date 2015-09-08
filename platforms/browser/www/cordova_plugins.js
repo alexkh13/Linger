@@ -27,6 +27,18 @@ module.exports = [
         "runs": true
     },
     {
+        "file": "plugins/phonegap-plugin-barcodescanner/www/barcodescanner.js",
+        "id": "phonegap-plugin-barcodescanner.BarcodeScanner",
+        "clobbers": [
+            "cordova.plugins.barcodeScanner"
+        ]
+    },
+    {
+        "file": "plugins/phonegap-plugin-barcodescanner/src/browser/BarcodeScannerProxy.js",
+        "id": "phonegap-plugin-barcodescanner.BarcodeScannerProxy",
+        "runs": true
+    },
+    {
         "file": "plugins/com.phonegap.plugins.facebookconnect/facebookConnectPlugin.js",
         "id": "com.phonegap.plugins.facebookconnect.FacebookConnectPlugin",
         "clobbers": [
@@ -39,8 +51,9 @@ module.exports.metadata =
 {
     "cordova-plugin-whitelist": "1.0.0",
     "cordova-plugin-camera": "1.2.0",
-    "com.phonegap.plugins.facebookconnect": "0.11.0",
-    "org.apache.cordova.geolocation": "0.3.12"
+    "org.apache.cordova.geolocation": "0.3.12",
+    "phonegap-plugin-barcodescanner": "4.0.2",
+    "com.phonegap.plugins.facebookconnect": "0.11.0"
 }
 // BOTTOM OF METADATA
 });

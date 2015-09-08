@@ -24,10 +24,18 @@ angular.module("linger.services").factory("lingerAPI", [ "$resource", function($
                 params: {
                     type: "facebook"
                 }
+            },
+            basicLogin: {
+                method: "POST",
+                isArray: false,
+                params: {
+                    type: "basic"
+                }
             }
         }),
         group:$resource(BACKEND_SERVER_URL + "api/chat/groups/:groupid"),
         msg: $resource(BACKEND_SERVER_URL + "api/chat/:groupid/message/:timestamp"),
-        users: $resource(BACKEND_SERVER_URL +  "api/user")
+        users: $resource(BACKEND_SERVER_URL +  "api/user"),
+        leaveGroup: $resource(BACKEND_SERVER_URL + "api/chat/leave")
     }
 }]);

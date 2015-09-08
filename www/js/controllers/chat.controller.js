@@ -10,7 +10,7 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
 
     $scope.friends = [];
 
-    $scope.myImage = UserService.getUser().picture.image;
+    $scope.myImage = (UserService.getUser().picture||{}).image;
 
     lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(data) {
 

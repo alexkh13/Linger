@@ -27,6 +27,8 @@ angular.module("linger.services").factory("MapItem", [ "MapUtils", function(MapU
 
         var isCluster = children && !!children.length;
 
+        this.isCluster = isCluster;
+
         var label = name || (isCluster ? children.length : (location.lng + "," + location.lat));
         var container = new PIXI.Container();
         var sprite = new PIXI.Sprite(isCluster ? clusterTexture : markerTexture);

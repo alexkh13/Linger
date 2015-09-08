@@ -39,6 +39,11 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
                 templateUrl: "html/login.html",
                 controller: "LoginController"
             })
+            .state("registration", {
+                url: "/register",
+                templateUrl: "html/registration.html",
+                controller: "RegistrationController"
+            })
             .state("main", {
                 url: "/",
                 templateUrl: "html/main.html",
@@ -82,7 +87,7 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
             });
 
     }])
-    .controller("Main", ["$scope", function($scope) {
+    .controller("Main", ["$scope", "$cordovaBarcodeScanner", function($scope, $cordovaBarcodeScanner) {
 
         var tabs = {
             "chats": 0,
@@ -98,6 +103,16 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
         $scope.$on("showDropDown", function() {
             $scope.showDropDownPopup =  true;
         });
+
+        $scope.scanQR = function() {
+            $cordovaBarcodeScanner
+                .scan()
+                .then(function(barcodeData) {
+                    debugger
+                }, function(error) {
+                    // An error occurred
+                });
+        }
 
     }]);
 angular.module("linger.services", [ "ngResource", "btford.socket-io", "LocalStorageModule" ]);

@@ -1,4 +1,4 @@
-angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map) {
+angular.module("linger.directives").directive("lingerMap", [ "Map", "$state", function(Map, $state) {
 
     return {
         scope: {
@@ -9,7 +9,13 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
         templateUrl: "html/linger-map/linger-map.directive.html",
         link: function(scope, element, attrs) {
 
-            var map = new Map(element);
+            var map = new Map(element, {
+                onClick: function(groupId) {
+                    $state.go("main.chat", {
+                        id: groupId
+                    });
+                }
+            });
 
             function resize() {
 
@@ -69,6 +75,7 @@ angular.module("linger.directives").directive("lingerMap", [ "Map", function(Map
                     location: { lng: item.location[0], lat: item.location[1] },
                     sub_points: _.map(item.points, function(point) {
                         return {
+                            id: point._id,
                             name: point.name,
                             image: point.image,
                             location: {

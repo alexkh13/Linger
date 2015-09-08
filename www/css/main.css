@@ -2,6 +2,10 @@ html, body {
     height: 100%;
 }
 
+*:focus {
+    outline: none;
+}
+
 input[type='file'] {
     position: fixed;
     top: 50%;
@@ -14,7 +18,7 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 .settings-line {
-    padding: 0.5em 1em;
+    padding: 0.5em 2em 0.5em 0.5em;
     color:  #666;
 }
 .settings-line i {
@@ -68,7 +72,9 @@ body {
 }
 
 .title {
-    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .options {
@@ -278,6 +284,7 @@ body {
 
 .chat-profile {
     background-size: cover;
+    background-position: center;
     position: absolute;
     top: 0.5em;
     left: 1em;
@@ -680,11 +687,12 @@ body {
     z-index: 100;
     top: 0.5em;
     right: 0.5em;
-    width: 11em;
+    /* width: 14em; */
     min-height: 5em;
     background-color: #f3f3f3;
     border-radius:0.3em;
     box-shadow: 0 0.2em 0.5em rgba(0, 0, 0, 0.16);
+    padding: 0.5em;
 }
 
 .create-page {

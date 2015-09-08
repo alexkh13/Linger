@@ -212,6 +212,37 @@ module.exports = function(db) {
         },
         findUser: function(uid) {
             return find("users", { _id: new ObjectID(uid) }, true);
+        },
+        addUser: function(user) {
+            var deferred = q.defer();
+            find("users", { email: user.email }, true).then(function(doc) {
+                if(!doc) {
+                    db.collection("users").insert(user, function(err, res) {
+                        if (err) {
+                            deferred.reject(err);
+                        }
+                        else {
+                            deferred.resolve(user)
+                        }
+                    });
+                }
+                else {
+                    deferred.reject(false);
+                }
+            });
+            return deferred.promise;
+        },
+        checkUser: function(email, password) {
+            var deferred = q.defer();
+            db.collection("users").findOne({ email: email, password: password }, function(err, doc) {
+                if (err || !doc) {
+                    deferred.reject(err || false);
+                }
+                else {
+                    deferred.resolve(doc)
+                }
+            });
+            return deferred.promise;
         }
     }
 };

@@ -7,8 +7,11 @@ angular.module("linger.controllers").controller("ChatsViewController", [ "$scope
             "longitude": $scope.currentLocation.lng
         }, function() {
             $scope.chats = _.flatten(_.pluck(clusters, "points"));
+
         });
     }
+
+    $scope.MQ = notificationsManager.GetMQ();
 
     $cordovaGeolocation.getCurrentPosition({timeout: 10000, enableHighAccuracy: false}).then(function(data) {
 

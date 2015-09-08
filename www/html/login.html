@@ -4,19 +4,19 @@
             <div>
                 <div class="login-title"><img src="images/mlogo.png" class="logo-img">linger</div>
                 <div class="login-input-wrapper">
-                    <input type="text" class="login-input" placeholder="Username">
+                    <input type="text" class="login-input" placeholder="Email" ng-model="email">
                 </div>
                 <div class="login-input-wrapper">
-                    <input type="text" class="login-input" placeholder="Password">
+                    <input type="password" class="login-input" placeholder="Password" ng-model="password">
                 </div>
                 <div>
-                    <button class="login-button">Login</button>
+                    <button class="login-button" ng-click="loginBasic()">Login</button>
                 </div>
                 <br>
                 <div class="login-account">
                     Don't have an account?
                 </div>
-                <div class="login-sign-up">Sign-up</div>
+                <div class="login-sign-up" ng-click="goRegister()">Sign-up</div>
                 <div class="or">or</div>
                 <img src="images/fb-login_2.png" class="login-facebook" ng-click="loginFacebook()">
             </div>

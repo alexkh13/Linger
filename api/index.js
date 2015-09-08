@@ -83,11 +83,27 @@ passport.use('facebook', new CustomStrategy(
     }
 ));
 
-api.post('/auth/facebook',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    function(req, res) {
+passport.use('basic', new CustomStrategy(
+    function(req, done) {
+        var email = req.body.email;
+        var password = require('sha1')(req.body.password);
+        req.db.checkUser(email, password).then(function(user){
+            done(null, user);
+        }, function(err) {
+            done(err, false);
+        })
+    }
+));
 
-       // req.db.joinAllConnections();
+api.post('/auth/facebook',
+    passport.authenticate('facebook'),
+    function(req, res) {
+        res.send(req.user);
+    });
+
+api.post('/auth/basic',
+    passport.authenticate('basic'),
+    function(req, res) {
         res.send(req.user);
     });
 
@@ -114,7 +130,7 @@ api.get('/auth/logout', function(req, res){
 });
 
 api.use(function(req, res, next) {
-    if (!req.user) {
+    if (req.originalUrl != '/api/user/register' && !req.user) {
         res.status(401);
         res.end();
     }

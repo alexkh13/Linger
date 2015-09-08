@@ -20,4 +20,14 @@ user.get("/lookup", function(req, res) {
     })
 });
 
+user.post("/register", function(req, res) {
+    req.body.password = require('sha1')(req.body.password);
+    req.db.addUser(req.body).then(function(user) {
+        res.send(user);
+    }, function(err) {
+        res.status(500);
+        res.send(err);
+    });
+});
+
 module.exports = user;

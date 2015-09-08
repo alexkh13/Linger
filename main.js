@@ -10,6 +10,8 @@ var fs = require('fs');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var _ = require('underscore');
+var q = require('q');
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -50,6 +52,36 @@ function initializeDB(db) {
             console.log(err);
         }
     };
+    function empty(col) {
+        var deferred = q.defer();
+        db.collection(col).remove({}, function() {
+            deferred.resolve();
+        });
+        return deferred.promise;
+    }
+    if(fs.existsSync(__dirname + "/db/dump")) {
+        console.log(">> Please wait, importing data...");
+        var collections = ["users","groups","messages"];
+        var all = [];
+        _.each(collections, function(col) {
+            all.push(empty(col));
+        });
+        q.all(all).then(function() {
+            // import
+            var exec = require('child_process').exec;
+            exec(/^win/.test(process.platform) ? 'mongorestore.exe' : "mongorestore", {
+                cwd: __dirname + '/db'
+            }, function(error, stdout, stderr) {
+                if(error) {
+                    console.log(error);
+                    console.log(">> ERROR IMPORTING DATA");
+                }
+                else {
+                    console.log(">> Import success");
+                }
+            });
+        })
+    }
 }
 
 MongoClient.connect('mongodb://127.0.0.1:27017/lingerdb', function(err, db) {

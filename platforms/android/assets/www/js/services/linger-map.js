@@ -1,6 +1,6 @@
 angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapItem", function($timeout, MapUtils, MapItem) {
 
-    return function Map(element) {
+    return function Map(element, events) {
 
         var stage = new PIXI.Container();
         var backgroundContainer = new PIXI.Container();
@@ -271,6 +271,8 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
         }
 
         function expandItem(item) {
+            if(currentExpended) return;
+            currentExpended = item;
             var self = this;
             var currentPosition = item.getPosition();
             var center = { x: renderer.width / 2, y: renderer.height / 2 };
@@ -285,6 +287,7 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
             // add all children
             angular.forEach(item.children, function(item, index) {
                 var added = self.add({
+                    id: item.id,
                     name: item.name,
                     location: item.location,
                     position: currentPosition,
@@ -298,7 +301,6 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
                 });
             });
             expandTimeout = $timeout(function() {
-                currentExpended = item;
                 currentExpended.radius = maxRadius;
             }, 500);
             // bring to center
@@ -309,17 +311,23 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
 
         this.tap = function(position) {
 
-            if (currentExpended) {
-                collapseItem();
-                return;
-            }
-
             for(var i=0;i<items.length; i++) {
                 var item = items[i];
                 if (item.isHit(position) && item.isVisible()) {
-                    expandItem.apply(this, [item]);
+                    if (!currentExpended && item.isCluster) {
+
+                        expandItem.apply(this, [item]);
+                    }
+                    else if (!item.isCluster){
+                        events.onClick(item.id);
+                        return;
+                    }
                     return;
                 }
+            }
+
+            if (currentExpended) {
+                collapseItem();
             }
         };
     };

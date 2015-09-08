@@ -90,6 +90,8 @@ chat.post("/leave", function(req, res) {
     GroupUsers[req.body.groupid] = _.without(GroupUsers[req.body.groupid], _.findWhere(GroupUsers[req.body.groupid], {id: req.user.id}));
 
     req.io.sockets.in(req.body.groupid).emit('removeuser',{user: req.user, groupid:req.body.groupid});
+
+    res.end();
 });
 
 /**

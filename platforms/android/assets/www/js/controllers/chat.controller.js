@@ -4,29 +4,61 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
         $scope.title = room.name;
     });
 
+    lingerSocket.emit('subscribe', {groupid:$stateParams.id});
+
     $scope.messages = [];
 
-    $scope.myImage = UserService.getUser().picture.image;
+    $scope.friends = [];
 
-    lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(messages) {
-        $scope.messages = _.map(_.sortBy(messages, "timestamp"), function(message) {
+    $scope.myImage = (UserService.getUser().picture||{}).image;
+
+    lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(data) {
+
+        $scope.messages = _.map(_.sortBy(data[0], "timestamp"), function(message) {
             return _.extend(message, {
                 me: message.userid == UserService.getUser()._id
             })
         });
         $scope.$broadcast("scrollToBottom");
+
+        $scope.friends = _.indexBy(data[1],"_id",function(a){return a});
+
+        //$scope.friends = _.without($scope.friends, _.findWhere($scope.friends, {_id: UserService.getUser()._id}));
     });
 
+
     notificationsManager.register($stateParams.id, function(data){
-        if (UserService.getUser()._id == data.userid) {
-            data.me = true;
+
+        // In case new messages arrived
+        if(data.messages) {
+            if (UserService.getUser()._id == data.messages.userid) {
+                data.messages.me = true;
+            }
+            $scope.messages.push(data.messages);
+
+            $scope.$broadcast("scrollToBottom");
         }
-        $scope.messages.push(data);
-        $scope.$broadcast("scrollToBottom");
+        // In case new friends arrived
+        else
+        {
+            if(data.add == 0)
+            {
+                //$scope.friends.remove(data.user._id);
+                $scope.friends = _.without($scope.friends, _.findWhere($scope.friends, {_id: data.user._id}));
+            }
+            else
+            {
+                $scope.friends.push(data.user);
+            }
+            // Scroll bottom for friends
+        }
+
     });
 
     $scope.$on("$destroy", function() {
         notificationsManager.unregister($stateParams.id);
+
+        lingerAPI.leaveGroup.save({groupid: $stateParams.id});
     });
 
     $scope.send = function() {
