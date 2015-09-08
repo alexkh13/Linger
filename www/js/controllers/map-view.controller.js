@@ -80,6 +80,12 @@ angular.module("linger.controllers").controller("MapViewController", [ "$scope",
         $state.go("main.create");
     };
 
+    $scope.go = function(item) {
+        $state.go("main.chat", {
+            id: item._id
+        });
+    }
+
 }]);
 
 

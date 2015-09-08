@@ -66,6 +66,16 @@
             "APP_ID": "361668527356399",
             "APP_NAME": "Linger",
             "PACKAGE_NAME": "com.linger.mobile"
+        },
+        "cordova-plugin-customurlscheme": {
+            "URL_SCHEME": "linger",
+            "PACKAGE_NAME": "com.linger.mobile"
+        },
+        "cordova-plugin-appavailability": {
+            "PACKAGE_NAME": "com.linger.mobile"
+        },
+        "de.appplant.cordova.plugin.printer": {
+            "PACKAGE_NAME": "com.linger.mobile"
         }
     },
     "dependent_plugins": {}

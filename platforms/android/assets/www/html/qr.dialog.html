@@ -1,0 +1,22 @@
+<md-dialog aria-label="Mango (Fruit)">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2><i class="fa fa-qrcode"></i> QR Code</h2>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+        <md-dialog-content style="max-width:800px;max-height:810px; ">
+            <div style="width: 250px;height: 250px; background:url(api/chat/{{groupId}}/qr) center no-repeat;"></div>
+        </md-dialog-content>
+        <div class="md-actions" layout="row">
+            <!--<md-button ng-click="print()" ng-show="printerAvail">-->
+                <!--Print-->
+            <!--</md-button>-->
+            <span flex></span>
+            <md-button ng-click="cancel()">
+                Close
+            </md-button>
+        </div>
+    </form>
+</md-dialog>
