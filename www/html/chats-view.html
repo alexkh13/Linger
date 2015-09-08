@@ -7,7 +7,7 @@
             <span class="title">{{ chat.name }}</span>
             <!--span class="count-people">{{chat.count}}</span>
             <span class="count-friends">{{chat.friends}}</span>-->
-            <span class="count-messages" ng-if="chat.messages">{{MQ[chat._id].length}}</span>
+            <span class="count-messages" ng-if="MQ[chat._id].length != 0">{{MQ[chat._id].length}}</span>
             <div class="last-message">{{chat.lastMessage}}</div>
         </div>
     </div>

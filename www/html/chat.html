@@ -23,7 +23,7 @@
             <button class="submit-button" ng-class="{'no-text':!message}" ng-click="send()"><i class="etp etp-location-pin"></i></button>
         </div>
         <div class="right-panel" ng-show="showRightPanel">
-            <div ng-repeat="friend in friends" class="chat-row" ng-click="go(friend)">
+            <div ng-repeat="friend in friends" class="chat-row" ng-if="friend._id != MyUserId" ng-click="go(friend)">
                 <div class="chat-profile" style="background-image:url('data:image/jpeg;base64,{{friend.picture.image}}')"></div>
                 <div class="chat-content">
                     {{ friend.name }}</div>

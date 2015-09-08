@@ -11,7 +11,7 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
 
       if(registeredControllers[data.groupid] && UserService.getUser()._id != data.user._id)
       {
-          var adata = {messages:data.messages, user:data.user,add:1}
+          var adata = {messages:data.messages, user:data.user,addUser:"1"}
           registeredControllers[data.groupid](data);
       }
     });
@@ -19,13 +19,12 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
     lingerSocket.on("removeuser", function(data){
         if(registeredControllers[data.groupid] && UserService.getUser()._id != data.user._id)
         {
-            var adata = {messages:data.messages, user:data.user,add:0}
+            var adata = {messages:data.messages, user:data.user,addUser:"0"}
             registeredControllers[data.groupid](data);
         }
     });
 
     lingerSocket.on("updatechat", function(data){
-
         if(registeredControllers[data.groupid])
         {
             registeredControllers[data.groupid]({messages:data});

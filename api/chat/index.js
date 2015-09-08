@@ -82,12 +82,9 @@ chat.get("/:groupid/message/:timestamp",function(req,res){
 });
 
 chat.post("/leave", function(req, res) {
-    if(!GroupUsers[req.body.groupid]) {
-        GroupUsers[req.body.groupid] = [];
-    }
 
     //GroupUsers[req.params.groupid].find(req.user)
-    GroupUsers[req.body.groupid] = _.without(GroupUsers[req.body.groupid], _.findWhere(GroupUsers[req.body.groupid], {id: req.user.id}));
+    //GroupUsers[req.body.groupid] = _.without(GroupUsers[req.body.groupid], _.findWhere(GroupUsers[req.body.groupid], {id: req.user.id}));
 
     req.io.sockets.in(req.body.groupid).emit('removeuser',{user: req.user, groupid:req.body.groupid});
 
