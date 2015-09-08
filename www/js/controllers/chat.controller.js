@@ -1,5 +1,7 @@
 angular.module("linger.controllers").controller("ChatController", [ "$q", "$scope", "$state", "$stateParams", "$timeout", "lingerAPI", "$http","lingerSocket","notificationsManager", "Restangular", "UserService", function ($q, $scope, $state, $stateParams, $timeout, lingerAPI, $http,lingerSocket,notificationsManager, Restangular, UserService) {
 
+    $scope.MyUserId = UserService.getUser()._id;
+
     notificationsManager.GetGroupById($stateParams.id).then(function(room) {
         $scope.title = room.name;
     });
@@ -14,14 +16,19 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
 
     lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(data) {
 
+        $scope.friends = _.indexBy(data[1],"_id",function(a){return a});
+
         $scope.messages = _.map(_.sortBy(data[0], "timestamp"), function(message) {
+            alert($scope.friends[message.userid]);
             return _.extend(message, {
-                me: message.userid == UserService.getUser()._id
+                me: message.userid == UserService.getUser()._id,
+                username: $scope.friends[message.userid].name
             })
         });
+
         $scope.$broadcast("scrollToBottom");
 
-        $scope.friends = _.indexBy(data[1],"_id",function(a){return a});
+
 
         //$scope.friends = _.without($scope.friends, _.findWhere($scope.friends, {_id: UserService.getUser()._id}));
     });
@@ -34,14 +41,18 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
             if (UserService.getUser()._id == data.messages.userid) {
                 data.messages.me = true;
             }
-            $scope.messages.push(data.messages);
+
+            $scope.messages.push( _.extend(data.messages, {
+                me: data.messages.userid == UserService.getUser()._id,
+                username: $scope.friends[data.messages.userid].name
+        }));
 
             $scope.$broadcast("scrollToBottom");
         }
         // In case new friends arrived
         else
         {
-            if(data.add == 0)
+            if(data.addUser == "0")
             {
                 //$scope.friends.remove(data.user._id);
                 $scope.friends = _.without($scope.friends, _.findWhere($scope.friends, {_id: data.user._id}));
