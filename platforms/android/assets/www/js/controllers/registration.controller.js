@@ -1,4 +1,4 @@
-angular.module("linger.controllers").controller("RegistrationController", [ "$scope", "$state", "$http", "lingerAPI", "$mdDialog", function ($scope, $state, $http, lingerAPI, $mdDialog) {
+angular.module("linger.controllers").controller("RegistrationController", [ "$scope", "$state", "$http", "lingerAPI", "$mdDialog","UserService", function ($scope, $state, $http, lingerAPI, $mdDialog,UserService) {
 
     $scope.user = {};
 
@@ -31,6 +31,7 @@ angular.module("linger.controllers").controller("RegistrationController", [ "$sc
         var user = angular.copy($scope.user);
         $http.post(BACKEND_SERVER_URL + "api/user/register", user).then(function(result) {
             lingerAPI.auth.basicLogin(user, function() {
+                UserService.setUser(user);
                 $state.go("main", null, {
                     location: "replace"
                 });

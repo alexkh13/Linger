@@ -4,6 +4,7 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
 
     notificationsManager.GetGroupById($stateParams.id).then(function(room) {
         $scope.title = room.name;
+        $scope.public = room.type != "personal";
     });
 
     lingerSocket.emit('subscribe', {groupid:$stateParams.id});
@@ -14,56 +15,42 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
 
     $scope.myImage = (UserService.getUser().picture||{}).image;
 
-    lingerAPI.msg.query({groupid: $stateParams.id, timestamp: new Date().toUTCString()}, function(data) {
+    $http.get(BACKEND_SERVER_URL + "api/chat/" + $stateParams.id + "/message/" + new Date().toUTCString()).then(function(result) {
+        var users = result.data.users;
+        var messages = result.data.messages;
+        var active = result.data.active;
 
-        $scope.friends = _.indexBy(data[1],"_id",function(a){return a});
-
-        $scope.messages = _.map(_.sortBy(data[0], "timestamp"), function(message) {
-            alert($scope.friends[message.userid]);
+        $scope.messages = _.map(_.sortBy(messages, "timestamp"), function(message) {
             return _.extend(message, {
-                me: message.userid == UserService.getUser()._id,
-                username: $scope.friends[message.userid].name
+                me: message.userid == UserService.getUser()._id
             })
         });
 
+        $scope.users = _.indexBy(users, "_id");
+
+        angular.forEach($scope.users, function(user) {
+            user.active = active[user._id];
+        });
+
         $scope.$broadcast("scrollToBottom");
-
-
-
-        //$scope.friends = _.without($scope.friends, _.findWhere($scope.friends, {_id: UserService.getUser()._id}));
     });
 
+    notificationsManager.register($stateParams.id, {
+        onIncomingMessage: function (message){
 
-    notificationsManager.register($stateParams.id, function(data){
-
-        // In case new messages arrived
-        if(data.messages) {
-            if (UserService.getUser()._id == data.messages.userid) {
-                data.messages.me = true;
-            }
-
-            $scope.messages.push( _.extend(data.messages, {
-                me: data.messages.userid == UserService.getUser()._id,
-                username: $scope.friends[data.messages.userid].name
-        }));
+            $scope.messages.push( _.extend(message, {
+                me: message.userid == UserService.getUser()._id
+            }));
 
             $scope.$broadcast("scrollToBottom");
+        },
+        onUserLeave: function(user) {
+            $scope.users[user._id].active = false;
+        },
+        onUserJoin: function(user) {
+            $scope.users[user._id] = user;
+            $scope.users[user._id].active = true;
         }
-        // In case new friends arrived
-        else
-        {
-            if(data.addUser == "0")
-            {
-                //$scope.friends.remove(data.user._id);
-                $scope.friends = _.without($scope.friends, _.findWhere($scope.friends, {_id: data.user._id}));
-            }
-            else
-            {
-                $scope.friends.push(data.user);
-            }
-            // Scroll bottom for friends
-        }
-
     });
 
     $scope.$on("$destroy", function() {
@@ -79,7 +66,7 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
         //    //content: $scope.message,
         //    //time: "18:37"
         //}
-
+        if(!$scope.message) return;
         // getting the froup messages - Consult alex groupid
         var sendData = { msgdata:$scope.message };
         $scope.message = "";
@@ -93,6 +80,7 @@ angular.module("linger.controllers").controller("ChatController", [ "$q", "$scop
     });
 
     $scope.go = function(user) {
+        if(user._id == $scope.MyUserId) return;
         $http.post(BACKEND_SERVER_URL + "api/chat", {
             target: user._id
         }).then(function(result) {

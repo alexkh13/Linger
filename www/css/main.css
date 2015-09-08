@@ -73,10 +73,14 @@ body {
 }
 
 .title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
+    
+white-space: nowrap;
+    
+overflow: hidden;
+    
+text-overflow: ellipsis;
+    
+width: 100%;
 }
 
 .options {
@@ -287,6 +291,23 @@ body {
     background-color: #D4DADC;
 }
 
+.chat-row .active-bubble {
+    
+background-color: #81CA2D;
+    
+position: absolute;
+    
+top: 0;
+    
+left: 0;
+    
+width: 0.5em;
+    
+height: 0.5em;
+    
+border-radius: 50%;
+}
+
 .chat-profile {
     background-size: cover;
     background-position: center;
@@ -318,6 +339,7 @@ body {
     left: 0;
     background-color: #f0f0f0;
     padding-top: 3.8em;
+    z-index: 2;
 }
 
 [ui-view].ng-enter, [ui-view].ng-leave {
@@ -640,8 +662,7 @@ body {
     word-break: break-word;
 }
 .event-wrapper.right .event-text {
-    text-align: left;
-}
+float: right;padding-left: 15%;padding-right: 0;}
 
 
 .event-wrapper .event-time {
@@ -652,7 +673,7 @@ body {
 }
 .event-wrapper.left .event-time  {
     color: #8C8C8C;
-
+    float: left;
 }
 .event-wrapper.right .event-time {
     color: #89A25A;

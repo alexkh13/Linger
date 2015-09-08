@@ -8,7 +8,7 @@
                 <span class="title" ng-click="showRightPanel=true">{{title}}</span>
             </div>
             <div class="col-xs-3 col-md-3 options">
-                <i class="etp etp-users" ng-click="showRightPanel=!showRightPanel"></i>
+                <i class="etp etp-users" ng-show="public" ng-click="showRightPanel=!showRightPanel"></i>
                 <i class="etp etp-dots-three-vertical" ng-click="$emit('showDropDown')"></i>
             </div>
         </div>
@@ -23,10 +23,12 @@
             <button class="submit-button" ng-class="{'no-text':!message}" ng-click="send()"><i class="etp etp-location-pin"></i></button>
         </div>
         <div class="right-panel" ng-show="showRightPanel">
-            <div ng-repeat="friend in friends" class="chat-row" ng-if="friend._id != MyUserId" ng-click="go(friend)">
-                <div class="chat-profile" style="background-image:url('data:image/jpeg;base64,{{friend.picture.image}}')"></div>
+            <div ng-repeat="user in users" class="chat-row" ng-click="go(user)">
+                <div class="chat-profile" style="background-image:url('{{user.picture.image ? ('data:image/jpeg;base64,' + user.picture.image) : 'images/user_placeholder.jpg' }}')">
+                    <span ng-show="user.active" class="active-bubble"></span>
+                </div>
                 <div class="chat-content">
-                    {{ friend.name }}</div>
+                    {{ user.name }}</div>
             </div>
         </div>
     </div>

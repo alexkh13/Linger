@@ -243,6 +243,24 @@ module.exports = function(db) {
                 }
             });
             return deferred.promise;
+        },
+        getGroupUsers: function(groupid) {
+            return find("groups", { _id: new ObjectID(groupid) }, true).then(function(group) {
+                var ids = group.users;
+                return find("users", { _id: { $in: ids } });
+            });
+        },
+        addUserToGroup: function(groupId, userId) {
+            var deferred = q.defer();
+            db.collection("groups").update({ _id: new ObjectID(groupId) }, { $addToSet: { "users": userId } }, function(err, doc) {
+                if (err) {
+                    deferred.reject(err);
+                }
+                else {
+                    deferred.resolve(doc)
+                }
+            });
+            return deferred.promise;
         }
     }
 };

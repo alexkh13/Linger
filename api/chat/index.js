@@ -2,6 +2,7 @@ var chat = require('express').Router();
 var geolib = require('./geolib');
 var qr = require('qr-image');
 var _ = require('underscore');
+var q = require('q');
 
 function handleError(err) {
     console.log(err);
@@ -68,34 +69,58 @@ chat.get("/:groupid/qr", function(req, res) {
     qr_png.pipe(res);
 });
 
+var groupsData = {};
+
+function updateUser(groupId, userId, active) {
+    if(!groupsData[groupId])
+        groupsData[groupId] = {};
+
+    if(active) {
+        groupsData[groupId][userId] = true;
+    }
+    else {
+        delete groupsData[groupId][userId];
+    }
+}
+
 /**
  * Get last messages for group before timestamp
  */
 chat.get("/:groupid/message/:timestamp",function(req,res){
-        req.db.getGroupMessagesBeforeTimestamp({
-            "groupid": req.params.groupid,
-            "timestamp": req.params.timestamp
-        }).then(function (docs)
-        {
-            if(!GroupUsers[req.params.groupid]) {
-                GroupUsers[req.params.groupid] = [];
-                GroupUsers[req.params.groupid] = _.indexBy({},"id",function(a){return a});
-            }
+    var groupId = req.params.groupid;
+    var timestamp = req.params.timestamp;
 
-            GroupUsers[req.params.groupid].push(req.user);
+    var messages = req.db.getGroupMessagesBeforeTimestamp({
+        "groupid": groupId,
+        "timestamp": timestamp
+    });
 
-            req.io.sockets.in(req.params.groupid).emit('adduser',{user: req.user, groupid:req.params.groupid});
+    var users = req.db.getGroupUsers(groupId);
 
-            res.send([docs, GroupUsers[req.params.groupid]]);
-        }, handleError);
+    var updateGroup = req.db.addUserToGroup(groupId, req.user._id);
+
+    q.all([messages, users, updateGroup]).then(function(results)
+    {
+        var docs = results[0];
+        var users = _.filter(results[1], function(user) {
+            return user._id != req.user._id;
+        });
+
+        updateUser(groupId, req.user._id, true);
+
+        req.io.sockets.in(req.params.groupid).emit('adduser',{user: req.user, groupid:req.params.groupid});
+
+        res.send({ messages: docs, users: users, active: groupsData[groupId] });
+    }, handleError);
 });
 
 chat.post("/leave", function(req, res) {
 
-    //GroupUsers[req.params.groupid].find(req.user)
-    //GroupUsers[req.body.groupid] = _.without(GroupUsers[req.body.groupid], _.findWhere(GroupUsers[req.body.groupid], {id: req.user.id}));
+    var groupId = req.body.groupid;
 
-    req.io.sockets.in(req.body.groupid).emit('removeuser',{user: req.user, groupid:req.body.groupid});
+    updateUser(groupId, req.user._id, false);
+
+    req.io.sockets.in(groupId).emit('removeuser',{user: req.user, groupid:groupId});
 
     res.end();
 });

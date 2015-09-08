@@ -6,13 +6,13 @@
                 'left': !message.me
             }">
                 <div class="event-avatar-wrapper">
-                    <div class="event-avatar" style="background-image:url('data:image/jpeg;base64,{{friends[message.userid].picture.image}}')"></div>
+                    <div class="event-avatar" style="background-image:url('{{users[message.userid].picture.image ? 'data:image/jpeg;base64,' + users[message.userid].picture.image : 'images/user_placeholder.jpg'}}')"></div>
                 </div>
                 <div class="event-content-wrapper">
-                    <div class="event-owner">{{message.userid}}</div>
+                    <div class="event-owner" ng-if="message.userid != MyUserId">{{message.username}}</div>
                     <div class="event-content">
                         <div class="event-text">{{message.message}}</div>
-                        <div class="event-time">{{message.timestamp}}</div>
+                        <div class="event-time">{{message.timestamp | time}}</div>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,11 @@
 angular.module("linger.controllers").controller("FriendsViewController", [ "$scope", "$http", "UserService", "$state", "Restangular", "lingerSocket", function ($scope, $http, UserService, $state, Restangular, lingerSocket) {
-    $scope.users = Restangular.all("user/lookup").getList().$object;
+    $scope.loading = true;
+
+    function stopLoading() { $scope.loading = false; }
+
+    Restangular.all("user/lookup").getList().then(function(users) {
+        $scope.users = users;
+    }).then(stopLoading, stopLoading);
 
     $scope.go = function(user) {
         $http.post(BACKEND_SERVER_URL + "api/chat", {

@@ -1,6 +1,6 @@
-<div class="view-content">
+<div class="view-content" loader="loading">
     <div ng-repeat="user in users" class="chat-row" ng-click="go(user)">
-        <div class="chat-profile" style="background-image:url({{friend.picture.thumbnail || 'images/user_placeholder.jpg'}});"></div>
+        <div class="chat-profile" style="background-image:url({{user.picture.image ? ('data:image/jpeg;base64,' + user.picture.image) : 'images/user_placeholder.jpg'}});"></div>
         <div class="chat-content">
             {{ user.name }}</div>
     </div>

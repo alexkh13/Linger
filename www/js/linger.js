@@ -87,6 +87,11 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
             });
 
     }])
+    .filter("time", function() {
+        return function(input) {
+            return moment(input).fromNow();
+        };
+    })
     .controller("Main", ["$scope", "$state", "$cordovaBarcodeScanner", "$cordovaPrinter", "$mdDialog", function($scope, $state, $cordovaBarcodeScanner, $cordovaPrinter, $mdDialog) {
 
         var tabs = {

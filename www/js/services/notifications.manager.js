@@ -11,23 +11,21 @@ angular.module("linger.services").factory("notificationsManager",["$q", "$stateP
 
       if(registeredControllers[data.groupid] && UserService.getUser()._id != data.user._id)
       {
-          var adata = {messages:data.messages, user:data.user,addUser:"1"}
-          registeredControllers[data.groupid](data);
+          registeredControllers[data.groupid].onUserJoin(data.user);
       }
     });
 
     lingerSocket.on("removeuser", function(data){
         if(registeredControllers[data.groupid] && UserService.getUser()._id != data.user._id)
         {
-            var adata = {messages:data.messages, user:data.user,addUser:"0"}
-            registeredControllers[data.groupid](data);
+            registeredControllers[data.groupid].onUserLeave(data.user);
         }
     });
 
-    lingerSocket.on("updatechat", function(data){
-        if(registeredControllers[data.groupid])
+    lingerSocket.on("updatechat", function(message){
+        if(registeredControllers[message.groupid])
         {
-            registeredControllers[data.groupid]({messages:data});
+            registeredControllers[message.groupid].onIncomingMessage(message);
             // TODO Ask Alex how to reference the messages + identify that owner sent it - data.owner
             //$scope.messages.push({"owner":data.owner, "content":data.msg, "time":data.time});
         }

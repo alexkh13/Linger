@@ -8,6 +8,8 @@ angular.module("linger.controllers").controller("CreateController", [ "$scope", 
 
     $scope.locationLoading = true;
 
+    $scope.users = {};
+
     $cordovaGeolocation.getCurrentPosition({timeout: 20000, enableHighAccuracy: true}).then(function(data) {
 
         currentLocation = {
@@ -60,6 +62,7 @@ angular.module("linger.controllers").controller("CreateController", [ "$scope", 
     };
 
     $scope.createGroup = function() {
+        if(!$scope.groupName) return;
         $scope.creatingGroup = true;
         var data = {
             location: currentLocation,
