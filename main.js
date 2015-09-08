@@ -34,6 +34,11 @@ app.use(session({
 var PUBLIC_DIR = __dirname + "/www";
 var CORDOVA_WWW = __dirname + "/platforms/browser/www";
 
+// expose BACKEND_SERVER_URL globally
+var env = (process.env['ENVIRONMENT'] || "local").toLocaleLowerCase();
+eval(fs.readFileSync(__dirname + "/config/config-" + env + ".js", "utf8"));
+GLOBAL.BACKEND_SERVER_URL = BACKEND_SERVER_URL;
+
 app.use('/js', express.static(PUBLIC_DIR + '/js'));
 app.use('/css', express.static(PUBLIC_DIR + '/css'));
 app.use('/html', express.static(PUBLIC_DIR + '/html'));

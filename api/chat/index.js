@@ -1,5 +1,6 @@
 var chat = require('express').Router();
 var geolib = require('./geolib');
+var qr = require('qr-image');
 var _ = require('underscore');
 
 function handleError(err) {
@@ -36,7 +37,7 @@ chat.get("/", function(req, res) {
 });
 
 /**
- * Get all groups
+ * Get group
  */
 chat.get("/:groupid", function(req, res) {
     req.db.getGroup(req.params.groupid).then(function(doc) {
@@ -57,6 +58,14 @@ chat.get("/:groupid", function(req, res) {
 
         }
     }, handleError);
+});
+
+/**
+ * Get group's QR code
+ */
+chat.get("/:groupid/qr", function(req, res) {
+    var qr_png = qr.image(BACKEND_SERVER_URL + '#/chat/' + req.params.groupid, { type: 'png' });
+    qr_png.pipe(res);
 });
 
 /**

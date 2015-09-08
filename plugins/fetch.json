@@ -57,5 +57,33 @@
             "APP_ID": "361668527356399",
             "APP_NAME": "Linger"
         }
+    },
+    "cordova-plugin-customurlscheme": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-customurlscheme"
+        },
+        "is_top_level": true,
+        "variables": {
+            "URL_SCHEME": "linger"
+        }
+    },
+    "cordova-plugin-appavailability": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ohh2ahh/AppAvailability.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "de.appplant.cordova.plugin.printer": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/katzer/cordova-plugin-printer.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

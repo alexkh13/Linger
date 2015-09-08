@@ -24,6 +24,7 @@
     "passport-facebook": "^2.0.0",
     "passport-oauth": "^1.0.0",
     "q": "^1.4.1",
+    "qr-image": "^3.1.0",
     "request": "^2.61.0",
     "serve-favicon": "~2.2.0",
     "sha1": "^1.1.1",

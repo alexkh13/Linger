@@ -46,6 +46,28 @@ module.exports = [
         "clobbers": [
             "facebookConnectPlugin"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-customurlscheme/www/android/LaunchMyApp.js",
+        "id": "cordova-plugin-customurlscheme.LaunchMyApp",
+        "clobbers": [
+            "window.plugins.launchmyapp"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-appavailability/www/AppAvailability.js",
+        "id": "cordova-plugin-appavailability.AppAvailability",
+        "clobbers": [
+            "appAvailability"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.printer/www/printer.js",
+        "id": "de.appplant.cordova.plugin.printer.Printer",
+        "clobbers": [
+            "plugin.printer",
+            "cordova.plugins.printer"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -56,7 +78,10 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.0.0",
     "org.apache.cordova.geolocation": "0.3.12",
     "phonegap-plugin-barcodescanner": "4.0.2",
-    "com.phonegap.plugins.facebookconnect": "0.11.0"
+    "com.phonegap.plugins.facebookconnect": "0.11.0",
+    "cordova-plugin-customurlscheme": "4.0.0",
+    "cordova-plugin-appavailability": "0.4.2",
+    "de.appplant.cordova.plugin.printer": "0.7.1"
 }
 // BOTTOM OF METADATA
 });

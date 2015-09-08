@@ -87,7 +87,7 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
             });
 
     }])
-    .controller("Main", ["$scope", "$cordovaBarcodeScanner", function($scope, $cordovaBarcodeScanner) {
+    .controller("Main", ["$scope", "$state", "$cordovaBarcodeScanner", "$cordovaPrinter", "$mdDialog", function($scope, $state, $cordovaBarcodeScanner, $cordovaPrinter, $mdDialog) {
 
         var tabs = {
             "chats": 0,
@@ -108,10 +108,66 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
             $cordovaBarcodeScanner
                 .scan()
                 .then(function(barcodeData) {
-                    debugger
+                    if (barcodeData.format == "QR_CODE") {
+                        var id = barcodeData.text.split('/').pop();
+                        if (id && id.length == 24) {
+                            $state.go("main.chat", {
+                                id: id
+                            });
+                            return;
+                        }
+                    }
+
+                    var alert = $mdDialog.alert({
+                        title: 'QR Error',
+                        content: "Not a valid group QR code.",
+                        ok: 'Close'
+                    });
+                    $mdDialog
+                        .show( alert )
+                        .finally(function() {
+                            alert = undefined;
+                        });
+
                 }, function(error) {
                     // An error occurred
                 });
+        };
+
+        $scope.isChat = function() {
+            return $state.is("main.chat");
+        };
+
+        $scope.newGroup = function() {
+            $state.go("main.create");
+        };
+
+        $scope.showQR = function(ev) {
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'html/qr.dialog.html',
+                targetEvent: ev,
+                clickOutsideToClose:true
+            })
+                .then(function(answer) {
+                    $scope.status = 'You said the information was "' + answer + '".';
+                }, function() {
+                    $scope.status = 'You cancelled the dialog.';
+                });
+        };
+
+        function DialogController($scope, $mdDialog) {
+            $scope.groupId = document.location.hash.split('/').pop();
+            $scope.printerAvail = $cordovaPrinter.isAvailable();
+            $scope.print = function () {
+                $cordovaPrinter.print("hello world");
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.getQRImage = function() {
+                return BACKEND_SERVER_URL + "api/chat/" + $scope.groupId + "/qr";
+            }
         }
 
     }]);

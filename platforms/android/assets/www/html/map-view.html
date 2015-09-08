@@ -16,7 +16,7 @@
                 <div class="cluster" ng-if="item.type=='cluster'">
                     <div class="cluster-title">{{item.name || item.location}} <span class="distance-tag">{{item.distance}}</span></div>
                     <div class="cluster-points">
-                        <div ng-repeat="item in item.points" class="point">
+                        <div ng-repeat="item in item.points" class="point" ng-click="go(item)">
                             {{item.name || item.location}}
                         </div>
                     </div>
