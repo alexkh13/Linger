@@ -165,7 +165,9 @@ angular.module("linger", [ "restangular", "ngMaterial", "ngCordova", "ngAnimate"
             $scope.cancel = function () {
                 $mdDialog.cancel();
             };
-
+            $scope.getQRImage = function() {
+                return BACKEND_SERVER_URL + "api/chat/" + $scope.groupId + "/qr";
+            }
         }
 
     }]);

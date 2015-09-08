@@ -69,17 +69,22 @@ body {
     font-family: 'Pacifico', sans-serif;
     color: #FFFFFF;
     font-size: 1.5em;
+    padding-right: 4em;
 }
 
 .title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
 }
 
 .options {
+    position: absolute;
     text-align: right;
     font-size: 0.8em;
+    right: 0;
+    width: 7em;
 }
 
 .options i {
@@ -481,11 +486,9 @@ body {
 }
 
 .submit-button i {
-    -ms-transform: scale(1.5) rotate(270deg);
-    -webkit-transform: scale(1.5) rotate(270deg);;
-    transform: scale(1.5) rotate(270deg);
-
-
+    -ms-transform: scale(2) rotate(270deg);
+    -webkit-transform: scale(2) rotate(270deg);
+    transform: scale(2) rotate(270deg);
     -webkit-transition:all .1s ease-in-out;
     -moz-transition:all .1s ease-in-out;
     -o-transition:all .1s ease-in-out;
@@ -493,14 +496,14 @@ body {
 }
 
 .submit-button.no-text {
-    box-shadow: none;
-    background-color: transparent;
-    color: #848484;
+    /* box-shadow: none; */
+    background-color: #ABABAB;
+    color: #E6E6E6;
 }
 
 .submit-button.no-text i {
-    -ms-transform: scale(1.5) rotate(180deg); /* IE 9 */
-    -webkit-transform: scale(1.5) rotate(180deg); /* Safari */
+    -ms-transform: scale(1.5) rotate(180deg);/* IE 9 */
+    -webkit-transform: scale(1.5) rotate(180deg);/* Safari */
     transform: scale(2) rotate(180deg);
 }
 
