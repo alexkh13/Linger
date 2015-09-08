@@ -311,22 +311,22 @@ angular.module("linger.services").factory("Map", [ "$timeout", "MapUtils", "MapI
 
         this.tap = function(position) {
 
+            var cluster = false;
+
             for(var i=0;i<items.length; i++) {
                 var item = items[i];
                 if (item.isHit(position) && item.isVisible()) {
                     if (!currentExpended && item.isCluster) {
-
                         expandItem.apply(this, [item]);
+                        cluster = true;
                     }
                     else if (!item.isCluster){
                         events.onClick(item.id);
-                        return;
                     }
-                    return;
                 }
             }
 
-            if (currentExpended) {
+            if (!cluster && currentExpended) {
                 collapseItem();
             }
         };
