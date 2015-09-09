@@ -9,18 +9,6 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"BarcodeScanner\"><param name=\"android-package\" value=\"com.phonegap.plugins.barcodescanner.BarcodeScanner\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"FacebookConnectPlugin\"><param name=\"android-package\" value=\"org.apache.cordova.facebook.ConnectPlugin\" /></feature>",
                             "count": 1
                         },
@@ -45,15 +33,19 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"LaunchMyApp\"><param name=\"android-package\" value=\"nl.xservices.plugins.LaunchMyApp\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"AppAvailability\"><param name=\"android-package\" value=\"com.ohh2ahh.appavailability.AppAvailability\" /></feature>",
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Printer\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.printer.Printer\" /></feature>",
+                            "xml": "<feature name=\"BarcodeScanner\"><param name=\"android-package\" value=\"com.phonegap.plugins.barcodescanner.BarcodeScanner\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -99,6 +91,12 @@
                             "count": 1
                         }
                     ],
+                    "/*/application/activity": [
+                        {
+                            "xml": "<intent-filter><data android:scheme=\"linger\" /><action android:name=\"android.intent.action.VIEW\" /><category android:name=\"android.intent.category.DEFAULT\" /><category android:name=\"android.intent.category.BROWSABLE\" /></intent-filter>",
+                            "count": 1
+                        }
+                    ],
                     "/manifest/application": [
                         {
                             "xml": "<activity android:clearTaskOnLaunch=\"true\" android:configChanges=\"orientation|keyboardHidden\" android:exported=\"false\" android:name=\"com.google.zxing.client.android.CaptureActivity\" android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\" android:windowSoftInputMode=\"stateAlwaysHidden\"><intent-filter><action android:name=\"com.google.zxing.client.android.SCAN\" /><category android:name=\"android.intent.category.DEFAULT\" /></intent-filter></activity>",
@@ -124,12 +122,6 @@
                         },
                         {
                             "xml": "<uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/*/application/activity": [
-                        {
-                            "xml": "<intent-filter><data android:scheme=\"linger\" /><action android:name=\"android.intent.action.VIEW\" /><category android:name=\"android.intent.category.DEFAULT\" /><category android:name=\"android.intent.category.BROWSABLE\" /></intent-filter>",
                             "count": 1
                         }
                     ]
@@ -620,10 +612,19 @@
         }
     },
     "installed_plugins": {
+        "com.phonegap.plugins.facebookconnect": {
+            "APP_ID": "361668527356399",
+            "APP_NAME": "Linger",
+            "PACKAGE_NAME": "com.linger.mobile"
+        },
         "cordova-plugin-android-support-v4": {
             "PACKAGE_NAME": "com.linger.mobile"
         },
         "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.linger.mobile"
+        },
+        "cordova-plugin-customurlscheme": {
+            "URL_SCHEME": "linger",
             "PACKAGE_NAME": "com.linger.mobile"
         },
         "cordova-plugin-whitelist": {
@@ -633,21 +634,6 @@
             "PACKAGE_NAME": "com.linger.mobile"
         },
         "phonegap-plugin-barcodescanner": {
-            "PACKAGE_NAME": "com.linger.mobile"
-        },
-        "com.phonegap.plugins.facebookconnect": {
-            "APP_ID": "361668527356399",
-            "APP_NAME": "Linger",
-            "PACKAGE_NAME": "com.linger.mobile"
-        },
-        "cordova-plugin-customurlscheme": {
-            "URL_SCHEME": "linger",
-            "PACKAGE_NAME": "com.linger.mobile"
-        },
-        "cordova-plugin-appavailability": {
-            "PACKAGE_NAME": "com.linger.mobile"
-        },
-        "de.appplant.cordova.plugin.printer": {
             "PACKAGE_NAME": "com.linger.mobile"
         }
     },

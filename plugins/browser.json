@@ -70,12 +70,6 @@
         "cordova-plugin-customurlscheme": {
             "URL_SCHEME": "linger",
             "PACKAGE_NAME": "com.linger.mobile"
-        },
-        "cordova-plugin-appavailability": {
-            "PACKAGE_NAME": "com.linger.mobile"
-        },
-        "de.appplant.cordova.plugin.printer": {
-            "PACKAGE_NAME": "com.linger.mobile"
         }
     },
     "dependent_plugins": {}

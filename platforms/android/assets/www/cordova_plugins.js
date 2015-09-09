@@ -1,6 +1,13 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
+        "file": "plugins/com.phonegap.plugins.facebookconnect/facebookConnectPlugin.js",
+        "id": "com.phonegap.plugins.facebookconnect.FacebookConnectPlugin",
+        "clobbers": [
+            "facebookConnectPlugin"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-camera/www/CameraConstants.js",
         "id": "cordova-plugin-camera.Camera",
         "clobbers": [
@@ -29,6 +36,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-customurlscheme/www/android/LaunchMyApp.js",
+        "id": "cordova-plugin-customurlscheme.LaunchMyApp",
+        "clobbers": [
+            "window.plugins.launchmyapp"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-whitelist/whitelist.js",
         "id": "cordova-plugin-whitelist.whitelist",
         "runs": true
@@ -39,49 +53,18 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.barcodeScanner"
         ]
-    },
-    {
-        "file": "plugins/com.phonegap.plugins.facebookconnect/facebookConnectPlugin.js",
-        "id": "com.phonegap.plugins.facebookconnect.FacebookConnectPlugin",
-        "clobbers": [
-            "facebookConnectPlugin"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-customurlscheme/www/android/LaunchMyApp.js",
-        "id": "cordova-plugin-customurlscheme.LaunchMyApp",
-        "clobbers": [
-            "window.plugins.launchmyapp"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-appavailability/www/AppAvailability.js",
-        "id": "cordova-plugin-appavailability.AppAvailability",
-        "clobbers": [
-            "appAvailability"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.printer/www/printer.js",
-        "id": "de.appplant.cordova.plugin.printer.Printer",
-        "clobbers": [
-            "plugin.printer",
-            "cordova.plugins.printer"
-        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
+    "com.phonegap.plugins.facebookconnect": "0.11.0",
     "cordova-plugin-android-support-v4": "21.0.1",
     "cordova-plugin-camera": "1.2.0",
+    "cordova-plugin-customurlscheme": "4.0.0",
     "cordova-plugin-whitelist": "1.0.0",
     "org.apache.cordova.geolocation": "0.3.12",
-    "phonegap-plugin-barcodescanner": "4.0.2",
-    "com.phonegap.plugins.facebookconnect": "0.11.0",
-    "cordova-plugin-customurlscheme": "4.0.0",
-    "cordova-plugin-appavailability": "0.4.2",
-    "de.appplant.cordova.plugin.printer": "0.7.1"
+    "phonegap-plugin-barcodescanner": "4.0.2"
 }
 // BOTTOM OF METADATA
 });
